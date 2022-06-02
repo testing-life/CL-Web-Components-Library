@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="./TrimAddress/index.js"></script>
+    <script src="./MaxInput/index.js"></script>
+    <style>
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+        color: green;
+      }
+
+      trim-address:first-child {
+        --background: goldenrod;
+        margin: 100px;
+      }
+
+      trim-address:last-child {
+        --background: pink;
+      }
+
+      max-input:first-of-type {
+        --background: purple;
+      }
+
+      max-input:last-child {
+        --background: violet;
+      }
+    </style>
+  </head>
+  <body>
+    web comps
+    <trim-address wallet-address="0x71C7656EC7ab88b098defB751B7401B5f6d8976F"></trim-address>
+    <max-input input-value="04234" max-value="123">
+      <span slot="input-label">Im a label</span>
+    </max-input>
+    <max-input input-value="666" max-value="999">
+      <span slot="input-label">Im another label</span>
+    </max-input>
+  </body>
+</html>
