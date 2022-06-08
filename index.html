@@ -5,6 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
+    <!-- <script type="module" src="https://unpkg.com/cl-webcomp-poc@1.0.0/MaxInput"></script> -->
+    <!-- <script type="module" src="https://unpkg.com/cl-webcomp-poc@1.0.0/TrimAddress"></script> -->
     <script src="./TrimAddress/index.js"></script>
     <script src="./MaxInput/index.js"></script>
     <style>
@@ -35,10 +37,15 @@
     web comps
     <trim-address wallet-address="0x71C7656EC7ab88b098defB751B7401B5f6d8976F"></trim-address>
     <max-input input-value="04234" max-value="123">
-      <span slot="input-label">Im a label</span>
+      <span slot="input-label">Im an imported label</span>
     </max-input>
     <max-input input-value="666" max-value="999">
       <span slot="input-label">Im another label</span>
     </max-input>
+    <script>
+      const input = document.querySelector('max-input');
+      console.log('input', input);
+      input.addEventListener('maxInputChanged', e => console.log('e.value', e.detail));
+    </script>
   </body>
 </html>

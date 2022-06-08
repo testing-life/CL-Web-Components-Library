@@ -30,6 +30,9 @@ class MaxInput extends HTMLElement {
     this.$error = this.shadowRoot.querySelector('.error-message');
     this.$maxButton = this.shadowRoot.querySelector('button');
     this.$input.setAttribute('placeholder', 'issa placeholder');
+    this.$input.oninput = e => {
+      this.dispatchEvent(new CustomEvent('maxInputChanged', { detail: { maxValue: e.target.value } }));
+    };
   }
 
   static get observedAttributes() {
@@ -72,8 +75,8 @@ class MaxInput extends HTMLElement {
 
   maximiseValue() {
     if (this.attributes['max-value']) {
-      const attrMap = this.attributes.getNamedItem('max-value');
-      this.$input.value = attrMap.value;
+      this.$input.value = this.getAttribute('max-value');
+      this.$input.dispatchEvent(new Event('input'));
     }
   }
 }
