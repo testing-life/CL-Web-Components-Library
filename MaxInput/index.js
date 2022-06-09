@@ -52,24 +52,14 @@ class MaxInput extends HTMLElement {
         if (!event.target.value && this.hasAttribute('required')) {
           this.invalid = true;
           this.$error.innerText = 'This field is required.';
+          this.$error.classList.remove('is-hidden');
         } else {
           this.invalid = false;
+          this.$error.classList.add('is-hidden');
           this.value = event.target.value;
           this.setAttribute('input-value', event.target.value);
         }
       });
-    }
-  }
-
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (name === 'input-value') {
-      console.log('content', name, newValue);
-      this.$input.value = newValue;
-      // this.shadowRoot.querySelector('#content').textContent = content;
-    }
-    if (name === 'max-value') {
-      console.log('content', name, newValue);
-      // this.shadowRoot.querySelector('#content').textContent = content;
     }
   }
 

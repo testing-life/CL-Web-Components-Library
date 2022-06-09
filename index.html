@@ -5,8 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
-    <!-- <script type="module" src="https://unpkg.com/cl-webcomp-poc@1.0.0/MaxInput"></script> -->
-    <!-- <script type="module" src="https://unpkg.com/cl-webcomp-poc@1.0.0/TrimAddress"></script> -->
+    <!-- <script type="module" src="https://unpkg.com/cl-webcomp-poc@0.0.1/MaxInput"></script> -->
+    <!-- <script type="module" src="https://unpkg.com/cl-webcomp-poc@-0.0.1/TrimAddress"></script> -->
     <script src="./TrimAddress/index.js"></script>
     <script src="./MaxInput/index.js"></script>
     <style>
@@ -36,16 +36,17 @@
   <body>
     web comps
     <trim-address wallet-address="0x71C7656EC7ab88b098defB751B7401B5f6d8976F"></trim-address>
-    <max-input input-value="04234" max-value="123">
+    <max-input id="input1" input-value="04234" max-value="123">
       <span slot="input-label">Im an imported label</span>
     </max-input>
-    <max-input input-value="666" max-value="999">
+    <max-input required id="input2" max-value="999">
       <span slot="input-label">Im another label</span>
     </max-input>
     <script>
-      const input = document.querySelector('max-input');
-      console.log('input', input);
+      const input = document.getElementById('input1');
       input.addEventListener('maxInputChanged', e => console.log('e.value', e.detail));
+      const input2 = document.getElementById('input2');
+      input2.addEventListener('maxInputChanged', e => console.log('e.value2', e.detail));
     </script>
   </body>
 </html>
