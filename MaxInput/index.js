@@ -52,12 +52,12 @@ class MaxInput extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['error'];
+    return ['errorMessage'];
   }
 
   connectedCallback() {
-    if (this.attributes['input']) {
-      const attrMap = this.attributes.getNamedItem('input');
+    if (this.attributes['inputValue']) {
+      const attrMap = this.attributes.getNamedItem('inputValue');
       this.$input.value = attrMap.value;
     }
 
@@ -89,7 +89,7 @@ class MaxInput extends HTMLElement {
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    if (name === 'error') {
+    if (name === 'errorMessage') {
       console.log('content', name, newValue);
       this.$error.innerText = !newValue ? 'This field is required.' : newValue;
       if (!newValue && !this.invalid) {
@@ -101,8 +101,8 @@ class MaxInput extends HTMLElement {
   }
 
   maximiseValue() {
-    if (this.attributes['max']) {
-      this.$input.value = this.getAttribute('max');
+    if (this.attributes['maxValue']) {
+      this.$input.value = this.getAttribute('maxValue');
       this.$input.dispatchEvent(new Event('input'));
     }
   }
