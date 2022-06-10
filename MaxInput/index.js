@@ -52,12 +52,12 @@ class MaxInput extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['error-message'];
+    return ['error'];
   }
 
   connectedCallback() {
-    if (this.attributes['input-value']) {
-      const attrMap = this.attributes.getNamedItem('input-value');
+    if (this.attributes['input']) {
+      const attrMap = this.attributes.getNamedItem('input');
       this.$input.value = attrMap.value;
     }
 
@@ -73,7 +73,7 @@ class MaxInput extends HTMLElement {
           this.invalid = false;
           this.showValidationMessage('hide');
           this.value = event.target.value;
-          this.setAttribute('input-value', event.target.value);
+          this.setAttribute('input', event.target.value);
         }
       });
     }
@@ -89,21 +89,20 @@ class MaxInput extends HTMLElement {
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    if (name === 'error-message') {
+    if (name === 'error') {
       console.log('content', name, newValue);
-      this.$error.innerText = !newValue || newValue === 'false' ? 'This field is required.' : newValue;
-      if (!newValue) {
+      this.$error.innerText = !newValue ? 'This field is required.' : newValue;
+      if (!newValue && !this.invalid) {
         this.showValidationMessage('hide');
       } else {
         this.showValidationMessage('show');
       }
-      this.render();
     }
   }
 
   maximiseValue() {
-    if (this.attributes['max-value']) {
-      this.$input.value = this.getAttribute('max-value');
+    if (this.attributes['max']) {
+      this.$input.value = this.getAttribute('max');
       this.$input.dispatchEvent(new Event('input'));
     }
   }
