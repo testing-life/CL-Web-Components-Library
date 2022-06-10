@@ -12,7 +12,7 @@
     <style>
       body {
         font-family: Arial, Helvetica, sans-serif;
-        color: green;
+        color: rgb(150, 43, 43);
       }
 
       trim-address:first-child {
@@ -23,9 +23,15 @@
       trim-address:last-child {
         --background: pink;
       }
+      max-input {
+        color: teal;
+        font-family: Georgia, 'Times New Roman', Times, serif;
+      }
 
       max-input:first-of-type {
-        --background: purple;
+        --inputBackground: purple;
+        --labelBackground: goldenrod;
+        --inputBorderShorthand: 5px dotted pink;
       }
 
       max-input:last-child {
@@ -39,7 +45,7 @@
     <max-input id="input1" input-value="04234" max-value="123">
       <span slot="input-label">Im an imported label</span>
     </max-input>
-    <max-input required id="input2" max-value="999">
+    <max-input required id="input2" input-value="666" error-message="Issa error" max-value="999">
       <span slot="input-label">Im another label</span>
     </max-input>
     <script>
