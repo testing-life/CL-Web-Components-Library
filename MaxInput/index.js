@@ -2,6 +2,7 @@ const maxInputTemplate = document.createElement('template');
 maxInputTemplate.innerHTML = `
     <style>
       :host {
+        --borderShorthand: 1px solid blue;
         --labelBackground: lightblue;
         --inputBackground: lightgreen;
         --buttonBackground: brown;
@@ -9,30 +10,82 @@ maxInputTemplate.innerHTML = `
         --borderRadiusShorthand: 10% 20% 30% 40%;
         --errorColour: red;
       }
-      label {
-          background: var(--labelBackground);          
+
+      .texty {
+        display: flex;
+        align-items: baseline;
       }
-      input {
-        background: var(--inputBackground);          
-        border: var(--inputBorderShorthand);          
+
+      :is(.texty) button {
+        border: none;
+        background: transparent;
+        text-decoration: underline;
       }
-      button {
-        background: var(--buttonBackground);
+
+      :is(.texty) label,
+      :is(.texty) input {
+        margin-right: 10px
       }
+
+      :is(.texty) input {
+        border:none;
+      }
+
+      :is(.boxy) .inputWrapper {
+        display:flex;
+        align-items: stretch;
+        border-radius: 5px;
+        border: 1px solid red;
+        padding: 5px;
+        gap: 5px;
+      }
+
+      :is(.boxy) .inputWrapper:focus,
+      :is(.boxy) .inputWrapper:hover {
+        outline: 1px solid blue;
+      }
+
+      :is(.boxy) input {
+        flex: 1;
+        border: none;
+        padding: 5px;
+        background: transparent;
+      }
+
+      :is(.boxy) input:focus {
+        outline: none;
+      }
+
+      :is(.boxy) button {
+        right: 0;
+        border-radius: 5px;
+        margin-right: 5px;
+        border: 0;
+        padding: 5px;
+      }
+
+  
+      button:hover,
+      button:focus {
+        cursor: pointer;
+      }
+
       .errorMessage {
         color: var(--errorColour);
       }
+
       .isHidden {
         display: none;
       }
     </style>
-    <div id='maxInput'>
+    <div id='maxInput' class='texty'>
       <label for='maxInput'>
         <slot name="input-label">Max Input</slot>
       </label>
+      <div class='inputWrapper'>
         <input id='maxInput' value type='text' />
-        <span class='errorMessage isHidden'></span>
         <button>MAX</button>
+        <span class='errorMessage isHidden'></span>
     </div>
 `;
 
@@ -42,23 +95,28 @@ class MaxInput extends HTMLElement {
     this.attachShadow({ mode: 'open' });
     this.shadowRoot.appendChild(maxInputTemplate.content.cloneNode(true));
     this.invalid = false;
+    this.$wrapper = this.shadowRoot.querySelector('#maxInput');
     this.$input = this.shadowRoot.querySelector('input');
     this.$error = this.shadowRoot.querySelector('.errorMessage');
     this.$maxButton = this.shadowRoot.querySelector('button');
-    this.$input.setAttribute('placeholder', 'issa placeholder');
+    this.$input.setAttribute('placeholder', 'Enter value');
     this.$input.oninput = e => {
       this.dispatchEvent(new CustomEvent('maxInputChanged', { detail: { maxValue: e.target.value } }));
     };
   }
 
   static get observedAttributes() {
-    return ['error'];
+    return ['error, layout'];
   }
 
   connectedCallback() {
     if (this.attributes['input']) {
       const attrMap = this.attributes.getNamedItem('input');
       this.$input.value = attrMap.value;
+    }
+
+    if (this.attributes['layout']) {
+      this.$wrapper.classList.replace('texty', this.getAttribute('layout'));
     }
 
     this.$maxButton.onclick = () => this.maximiseValue();
@@ -89,6 +147,7 @@ class MaxInput extends HTMLElement {
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
+    console.log('attrs', name, newValue);
     if (name === 'error') {
       console.log('content', name, newValue);
       this.$error.innerText = !newValue ? 'This field is required.' : newValue;
@@ -97,6 +156,11 @@ class MaxInput extends HTMLElement {
       } else {
         this.showValidationMessage('show');
       }
+    }
+
+    if (name === 'layout') {
+      console.log('layout', name, newValue);
+      this.classList.replace(oldValue, newValue);
     }
   }
 

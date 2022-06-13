@@ -41,18 +41,34 @@
   </head>
   <body>
     web comps
+    <button id="attrFlip">toggle attr</button>
+    <button id="errorFlip">toggle error</button>
     <trim-address walletaddress="0x71C7656EC7ab88b098defB751B7401B5f6d8976F"></trim-address>
-    <max-input id="input1" input="04234" max="123">
+    <!-- <max-input id="input1" input="04234" max="123">
       <span slot="input-label">Im an imported label</span>
-    </max-input>
-    <max-input required id="input2" input="666" error="Issa error" max="999">
+    </max-input> -->
+    <max-input required id="input2" input="666" error="Issa error" max="999" layout="texty">
       <span slot="input-label">Im another label</span>
     </max-input>
+    <max-input required id="input2" input="666" error="Issa error" max="999" layout="boxy">
+      <span slot="input-label">Im another label boxy</span>
+    </max-input>
+
     <script>
       const input = document.getElementById('input1');
       input.addEventListener('maxInputChanged', e => console.log('e.value', e.detail));
       const input2 = document.getElementById('input2');
       input2.addEventListener('maxInputChanged', e => console.log('e.value2', e.detail));
+
+      const toggle = document.getElementById('attrFlip');
+      toggle.addEventListener('click', () => {
+        input2.setAttribute('layout', 'boxy');
+      });
+
+      const toggleError = document.getElementById('errorFlip');
+      toggleError.addEventListener('click', () => {
+        input2.setAttribute('error', 'other error');
+      });
     </script>
   </body>
 </html>
