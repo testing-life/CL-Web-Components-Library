@@ -2,13 +2,16 @@ const maxInputTemplate = document.createElement('template');
 maxInputTemplate.innerHTML = `
     <style>
       :host {
-        --borderShorthand: 1px solid blue;
+        --borderShorthand: 1px solid plum;
         --labelBackground: lightblue;
-        --inputBackground: lightgreen;
-        --buttonBackground: brown;
-        --inputBorderShorthand: 2px solid green;
-        --borderRadiusShorthand: 10% 20% 30% 40%;
-        --errorColour: red;
+        --outlineShorthand: 1px solid olive;
+        --inputBackground: lightsteelblue;
+        --buttonBackground: wheat;
+        --inputBorderShorthand: 1px solid sienna;
+        --borderRadiusShorthand: 5px;
+        --errorColour: firebrick;
+        --paddingShorthand: 5px;
+        --marginShorthand: 5px 0 5px 0;
       }
 
       .texty {
@@ -34,21 +37,22 @@ maxInputTemplate.innerHTML = `
       :is(.boxy) .inputWrapper {
         display:flex;
         align-items: stretch;
-        border-radius: 5px;
-        border: 1px solid red;
-        padding: 5px;
+        border-radius: var(--borderRadiusShorthand);
+        border: var(--borderShorthand);
+        padding: var(--paddingShorthand);
         gap: 5px;
+        margin: var(--marginShorthand);
       }
 
       :is(.boxy) .inputWrapper:focus,
       :is(.boxy) .inputWrapper:hover {
-        outline: 1px solid blue;
+        outline: var(--outlineShorthand);
       }
 
       :is(.boxy) input {
         flex: 1;
         border: none;
-        padding: 5px;
+        padding: var(--paddingShorthand);
         background: transparent;
       }
 
@@ -57,15 +61,19 @@ maxInputTemplate.innerHTML = `
       }
 
       :is(.boxy) button {
-        border-radius: 5px;
+        border-radius: var(--borderRadiusShorthand);
         border: 0;
-        padding: 5px;
+        padding: var(--paddingShorthand);
       }
 
-  
       button:hover,
       button:focus {
         cursor: pointer;
+      }
+
+
+      button {
+        background: var(--buttonBackground);
       }
 
       .errorMessage {
@@ -75,6 +83,7 @@ maxInputTemplate.innerHTML = `
       .isHidden {
         display: none;
       }
+
     </style>
     <div id='maxInput' class='texty'>
       <label>
@@ -83,7 +92,8 @@ maxInputTemplate.innerHTML = `
       <div class='inputWrapper'>
         <input id='maxInput' value type='text' />
         <button>MAX</button>
-        <span class='errorMessage isHidden'></span>
+      </div>
+      <span class='errorMessage isHidden'></span>
     </div>
 `;
 
@@ -116,6 +126,9 @@ class MaxInput extends HTMLElement {
 
     if (this.attributes['layout']) {
       this.$wrapper.classList.replace('texty', this.getAttribute('layout'));
+      if (this.getAttribute('layout') === 'texty') {
+        this.$maxButton.innerHTML = 'Max amount';
+      }
     }
 
     this.$maxButton.onclick = () => this.maximiseValue();
@@ -164,7 +177,6 @@ class MaxInput extends HTMLElement {
     }
 
     if (name === 'layout') {
-      console.log('layout', name, newValue);
       this.classList.replace(oldValue, newValue);
     }
   }
