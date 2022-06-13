@@ -57,9 +57,7 @@ maxInputTemplate.innerHTML = `
       }
 
       :is(.boxy) button {
-        right: 0;
         border-radius: 5px;
-        margin-right: 5px;
         border: 0;
         padding: 5px;
       }
@@ -79,8 +77,8 @@ maxInputTemplate.innerHTML = `
       }
     </style>
     <div id='maxInput' class='texty'>
-      <label for='maxInput'>
-        <slot name="input-label">Max Input</slot>
+      <label>
+        <slot name="input-label"></slot>
       </label>
       <div class='inputWrapper'>
         <input id='maxInput' value type='text' />
@@ -97,6 +95,7 @@ class MaxInput extends HTMLElement {
     this.invalid = false;
     this.$wrapper = this.shadowRoot.querySelector('#maxInput');
     this.$input = this.shadowRoot.querySelector('input');
+    this.$label = this.shadowRoot.querySelector('label');
     this.$error = this.shadowRoot.querySelector('.errorMessage');
     this.$maxButton = this.shadowRoot.querySelector('button');
     this.$input.setAttribute('placeholder', 'Enter value');
@@ -122,6 +121,12 @@ class MaxInput extends HTMLElement {
     this.$maxButton.onclick = () => this.maximiseValue();
 
     if (this.$input.isConnected) {
+      if (this.$label.isConnected) {
+        this.$label.addEventListener('click', () => {
+          this.$input.focus();
+        });
+      }
+
       this.$input.addEventListener('input', event => {
         if (!event.target.value && this.hasAttribute('required')) {
           this.invalid = true;
