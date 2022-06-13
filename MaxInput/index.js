@@ -12,6 +12,8 @@ maxInputTemplate.innerHTML = `
         --errorColour: firebrick;
         --paddingShorthand: 5px;
         --marginShorthand: 5px 0 5px 0;
+        --textDecoration: underline;
+        --textBorderBottomShorthand: 2px dotted sienna;
       }
 
       .texty {
@@ -22,7 +24,8 @@ maxInputTemplate.innerHTML = `
       :is(.texty) button {
         border: none;
         background: transparent;
-        text-decoration: underline;
+        text-decoration: var(--textDecoration);
+        border-bottom: var(--textBorderBottomShorthand);
       }
 
       :is(.texty) label,
@@ -32,6 +35,7 @@ maxInputTemplate.innerHTML = `
 
       :is(.texty) input {
         border:none;
+        background: transparent;
       }
 
       :is(.boxy) .inputWrapper {
@@ -41,6 +45,7 @@ maxInputTemplate.innerHTML = `
         border: var(--borderShorthand);
         padding: var(--paddingShorthand);
         gap: 5px;
+        background: var(--inputBackground);
         margin: var(--marginShorthand);
       }
 

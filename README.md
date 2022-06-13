@@ -12,3 +12,5 @@ Exposed CSS properties for styling and default values:
 - --errorColour: firebrick;
 - --paddingShorthand: 5px;
 - --marginShorthand: 5px 0 5px 0;
+- --textDecoration: underline;
+- --textBorderBottomShorthand: 2px dotted sienna
