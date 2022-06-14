@@ -12,7 +12,7 @@ maxInputTemplate.innerHTML = `
         --errorColour: firebrick;
         --paddingShorthand: 5px;
         --marginShorthand: 5px 0 5px 0;
-        --textDecoration: underline;
+        --textDecoration: none;
         --textBorderBottomShorthand: 2px dotted sienna;
       }
 
@@ -96,7 +96,7 @@ maxInputTemplate.innerHTML = `
       </label>
       <div class='inputWrapper'>
         <input id='maxInput' value type='text' />
-        <button>MAX</button>
+        <button>Max amount</button>
       </div>
       <span class='errorMessage isHidden'></span>
     </div>
@@ -120,7 +120,7 @@ class MaxInput extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['error, layout'];
+    return ['error', 'layout'];
   }
 
   connectedCallback() {
@@ -130,12 +130,11 @@ class MaxInput extends HTMLElement {
     }
 
     if (this.attributes['layout']) {
-      this.$wrapper.classList.replace('texty', this.getAttribute('layout'));
-      if (this.getAttribute('layout') === 'texty') {
-        this.$maxButton.innerHTML = 'Max amount';
+      if (this.getAttribute('layout')) {
+        this.$wrapper.classList.replace('texty', this.getAttribute('layout'));
+        this.toggleButtonLabel(this.getAttribute('layout'));
       }
     }
-
     this.$maxButton.onclick = () => this.maximiseValue();
 
     if (this.$input.isConnected) {
@@ -160,6 +159,14 @@ class MaxInput extends HTMLElement {
     }
   }
 
+  toggleButtonLabel(layout) {
+    if (layout === 'boxy') {
+      this.$maxButton.innerHTML = 'MAX';
+    } else {
+      this.$maxButton.innerHTML = 'Max amount';
+    }
+  }
+
   showValidationMessage(direction) {
     if (direction === 'show') {
       this.$error.classList.remove('isHidden');
@@ -170,9 +177,7 @@ class MaxInput extends HTMLElement {
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    console.log('attrs', name, newValue);
     if (name === 'error') {
-      console.log('content', name, newValue);
       this.$error.innerText = !newValue ? 'This field is required.' : newValue;
       if (!newValue && !this.invalid) {
         this.showValidationMessage('hide');
@@ -181,8 +186,9 @@ class MaxInput extends HTMLElement {
       }
     }
 
-    if (name === 'layout') {
-      this.classList.replace(oldValue, newValue);
+    if (name === 'layout' && newValue) {
+      this.$wrapper.classList.replace(oldValue, newValue);
+      this.toggleButtonLabel(newValue);
     }
   }
 
