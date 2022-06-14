@@ -14,3 +14,6 @@ Exposed CSS properties for styling and default values:
 - --marginShorthand: 5px 0 5px 0;
 - --textDecoration: underline;
 - --textBorderBottomShorthand: 2px dotted sienna
+- --labelFontSize: inherit;
+- --inputFontSize: inherit;
+- --buttonFontSize: inherit;
