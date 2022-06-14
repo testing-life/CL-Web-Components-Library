@@ -14,8 +14,17 @@ maxInputTemplate.innerHTML = `
         --marginShorthand: 5px 0 5px 0;
         --textDecoration: none;
         --textBorderBottomShorthand: 2px dotted sienna;
+        --labelFontSize: inherit;
+        --inputFontSize: inherit;
+        --buttonFontSize: inherit;
       }
 
+      * {
+        font-size: inherit;
+        font-family: inherit;
+        color:inherit;
+      }
+      
       .texty {
         display: flex;
         align-items: baseline;
@@ -76,9 +85,17 @@ maxInputTemplate.innerHTML = `
         cursor: pointer;
       }
 
+      input {
+        font-size: var(--inputFontSize);
+      }
+
+      label {
+        font-size: var(--labelFontSize);
+      }
 
       button {
         background: var(--buttonBackground);
+        font-size: var(--buttonFontSize)
       }
 
       .errorMessage {
