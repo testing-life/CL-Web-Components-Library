@@ -1,4 +1,4 @@
-# WebComponentsLib
+# Web Components Library
 
 Exposed CSS properties for styling and default values:
 
