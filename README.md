@@ -2,6 +2,8 @@
 
 Exposed CSS properties for styling and default values:
 
+## `max-input` component
+
 - --borderShorthand: 1px solid plum;
 - --labelBackground: lightblue;
 - --outlineShorthand: 1px solid olive;
@@ -17,3 +19,11 @@ Exposed CSS properties for styling and default values:
 - --labelFontSize: inherit;
 - --inputFontSize: inherit;
 - --buttonFontSize: inherit;
+
+## `trim-address` component
+
+- --background: lightblue;
+- --fontFamily: inherit;
+- --fontSize: inherit;
+- --fontWeight: inherit;
+- --padding: 5px;

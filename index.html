@@ -9,15 +9,19 @@
     <!-- <script type="module" src="https://unpkg.com/cl-webcomp-poc@-0.0.1/TrimAddress"></script> -->
     <script src="./TrimAddress/index.js"></script>
     <script src="./MaxInput/index.js"></script>
+    <!-- <script type="module" src="./index.js"></script> -->
     <style>
       body {
         font-family: Arial, Helvetica, sans-serif;
         color: rgb(150, 43, 43);
       }
 
-      trim-address:first-child {
+      trim-address:first-of-type {
         --background: goldenrod;
+        --fontFamily: serif;
+        --padding: 2rem;
         margin: 100px;
+        display: block;
       }
 
       trim-address:last-child {
@@ -43,7 +47,9 @@
     web comps
     <button id="attrFlip">toggle attr</button>
     <button id="errorFlip">toggle error</button>
-    <trim-address walletaddress="0x71C7656EC7ab88b098defB751B7401B5f6d8976F"></trim-address>
+    <trim-address wallet="0x71C7656EC7ab88b098defB751B7401B5f6d8976F"></trim-address>
+    <trim-address wallet=""></trim-address>
+    <trim-address></trim-address>
     <max-input id="input1" input="04234" max="123">
       <span slot="input-label">Im an imported label</span>
     </max-input>
