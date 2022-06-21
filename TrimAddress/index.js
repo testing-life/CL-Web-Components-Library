@@ -3,12 +3,23 @@ template.innerHTML = `
     <style>
       :host {
         --background: lightblue;
+        --fontFamily: inherit;
+        --fontSize: inherit;
+        --fontWeight: inherit;
+        --borderRadiusShorthand: 2px;
+        --padding: 5px;
       }
-        span {
-            background: var(--background);
-        }
+
+      span {
+          background: var(--background);
+          font-family: var(--fontFamily);
+          font-size: var(--fontSize);
+          font-weight: var(--fontWeight);
+          border-radius: var(--borderRadiusShorthand);
+          padding: var(--padding);
+      }
     </style>
-    <span id='content'></span>
+    <span id='content'>Wallet address</span>
 `;
 
 class TrimAddress extends HTMLElement {
@@ -17,11 +28,21 @@ class TrimAddress extends HTMLElement {
     this.content = '';
     this.attachShadow({ mode: 'open' });
     this.shadowRoot.appendChild(template.content.cloneNode(true));
-    this.shadowRoot.querySelector('#content').textContent = 'test';
+    this.$content = this.shadowRoot.querySelector('#content');
   }
 
   static get observedAttributes() {
-    return ['wallet-address'];
+    return ['wallet'];
+  }
+
+  connectedCallback() {
+    if (this.$content.isConnected) {
+      if (this.attributes['address']) {
+        if (this.getAttribute('address')) {
+          this.$content.textContent = this.getAttribute('address');
+        }
+      }
+    }
   }
 
   truncateAddress(address) {
@@ -33,8 +54,10 @@ class TrimAddress extends HTMLElement {
 
   attributeChangedCallback(name, oldValue, newValue) {
     const content = this.truncateAddress(newValue);
-    if (name === 'wallet-address') {
-      this.shadowRoot.querySelector('#content').textContent = content;
+    if (name === 'wallet') {
+      if (newValue) {
+        this.shadowRoot.querySelector('#content').textContent = content;
+      }
     }
   }
 }

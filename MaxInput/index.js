@@ -130,10 +130,6 @@ class MaxInput extends HTMLElement {
     this.$label = this.shadowRoot.querySelector('label');
     this.$error = this.shadowRoot.querySelector('.errorMessage');
     this.$maxButton = this.shadowRoot.querySelector('button');
-    this.$input.setAttribute('placeholder', 'Enter value');
-    this.$input.oninput = e => {
-      this.dispatchEvent(new CustomEvent('maxInputChanged', { detail: { maxValue: e.target.value } }));
-    };
   }
 
   static get observedAttributes() {
@@ -141,20 +137,27 @@ class MaxInput extends HTMLElement {
   }
 
   connectedCallback() {
-    if (this.attributes['input']) {
-      const attrMap = this.attributes.getNamedItem('input');
-      this.$input.value = attrMap.value;
-    }
-
-    if (this.attributes['layout']) {
-      if (this.getAttribute('layout')) {
-        this.$wrapper.classList.replace('texty', this.getAttribute('layout'));
-        this.toggleButtonLabel(this.getAttribute('layout'));
+    if (this.$wrapper.isConnected) {
+      this.$maxButton.onclick = () => this.maximiseValue();
+      if (this.attributes['layout']) {
+        if (this.getAttribute('layout')) {
+          this.$wrapper.classList.replace('texty', this.getAttribute('layout'));
+          this.toggleButtonLabel(this.getAttribute('layout'));
+        }
       }
     }
-    this.$maxButton.onclick = () => this.maximiseValue();
 
     if (this.$input.isConnected) {
+      this.$input.oninput = e => {
+        this.dispatchEvent(new CustomEvent('maxInputChanged', { detail: { maxValue: e.target.value } }));
+      };
+      this.$input.setAttribute('placeholder', 'Enter value');
+
+      if (this.attributes['input']) {
+        const attrMap = this.attributes.getNamedItem('input');
+        this.$input.value = attrMap.value;
+      }
+
       if (this.$label.isConnected) {
         this.$label.addEventListener('click', () => {
           this.$input.focus();
