@@ -19,7 +19,7 @@ template.innerHTML = `
           padding: var(--padding);
       }
     </style>
-    <span id='content'></span>
+    <span id='content'>Wallet address</span>
 `;
 
 class TrimAddress extends HTMLElement {
@@ -28,11 +28,21 @@ class TrimAddress extends HTMLElement {
     this.content = '';
     this.attachShadow({ mode: 'open' });
     this.shadowRoot.appendChild(template.content.cloneNode(true));
-    this.shadowRoot.querySelector('#content').textContent = 'Wallet address';
+    this.$content = this.shadowRoot.querySelector('#content');
   }
 
   static get observedAttributes() {
     return ['wallet'];
+  }
+
+  connectedCallback() {
+    if (this.$content.isConnected) {
+      if (this.attributes['address']) {
+        if (this.getAttribute('address')) {
+          this.$content.textContent = this.getAttribute('address');
+        }
+      }
+    }
   }
 
   truncateAddress(address) {
