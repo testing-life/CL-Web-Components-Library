@@ -1,4 +1,9 @@
 <!DOCTYPE html>
+<script type="module">
+  import * as services from './services/index.js';
+  window.services = services;
+  console.log('window.serv', window.services);
+</script>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -7,8 +12,8 @@
     <title>Document</title>
     <!-- <script type="module" src="https://unpkg.com/cl-webcomp-poc@0.0.1/MaxInput"></script> -->
     <!-- <script type="module" src="https://unpkg.com/cl-webcomp-poc@-0.0.1/TrimAddress"></script> -->
-    <script src="./TrimAddress/index.js"></script>
-    <script src="./MaxInput/index.js"></script>
+    <script src="./components/TrimAddress/index.js"></script>
+    <script src="./components/MaxInput/index.js"></script>
     <!-- <script type="module" src="./index.js"></script> -->
     <style>
       body {

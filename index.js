@@ -1,2 +1,2 @@
-import './MaxInput/index.js';
-import './TrimAddress/index.js';
+import './components/MaxInput/index.js';
+import './components/TrimAddress/index.js';
