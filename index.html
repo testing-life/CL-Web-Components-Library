@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <script type="module">
-  import { Services, MaxInput, TrimAddress } from './index.js';
+  import { Services, MaxInput, TrimAddress, EnsLookup } from './index.js';
   window.services = Services;
   console.log('window.serv', window.services, Services);
 </script>
@@ -70,7 +70,8 @@
     <h2>no layout attr</h2>
     <max-input required id="input2" input="666" error="" max="999" layout=""> </max-input>
     <max-input required id="input2" input="666" error="" max="999"> </max-input>
-
+    <h3>ens lookup</h3>
+    <ens-lookup query="0xff2234"> </ens-lookup>
     <script>
       const input = document.getElementById('input1');
       input.addEventListener('maxInputChanged', e => console.log('e.value', e.detail));
