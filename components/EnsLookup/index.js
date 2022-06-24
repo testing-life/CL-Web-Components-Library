@@ -6,17 +6,13 @@ EnsLookupTemplate.innerHTML = `
         --labelBackground: lightblue;
         --outlineShorthand: 1px solid olive;
         --inputBackground: lightsteelblue;
-        --buttonBackground: wheat;
         --inputBorderShorthand: 1px solid sienna;
         --borderRadiusShorthand: 5px;
         --errorColour: firebrick;
         --paddingShorthand: 5px;
         --marginShorthand: 5px 0 5px 0;
-        --textDecoration: none;
-        --textBorderBottomShorthand: 2px dotted sienna;
         --labelFontSize: inherit;
         --inputFontSize: inherit;
-        --buttonFontSize: inherit;
       }
 
       * {
@@ -24,60 +20,27 @@ EnsLookupTemplate.innerHTML = `
         font-family: inherit;
         color:inherit;
       }
-     
-      :is(.boxy) .inputWrapper {
-        display:flex;
-        align-items: stretch;
-        border-radius: var(--borderRadiusShorthand);
-        border: var(--borderShorthand);
-        padding: var(--paddingShorthand);
-        gap: 5px;
-        background: var(--inputBackground);
-        margin: var(--marginShorthand);
-      }
-
-      :is(.boxy) .inputWrapper:focus,
-      :is(.boxy) .inputWrapper:hover {
+   
+      input:focus,
+      input:hover {
         outline: var(--outlineShorthand);
       }
 
-      :is(.boxy) input {
-        flex: 1;
-        border: none;
-        padding: var(--paddingShorthand);
-        background: transparent;
+      .isError {
+        color: var(--errorColour);
       }
-
-      :is(.boxy) input:focus {
-        outline: none;
-      }
-
-      :is(.boxy) button {
-        border-radius: var(--borderRadiusShorthand);
-        border: 0;
-        padding: var(--paddingShorthand);
-      }
-
-      button:hover,
-      button:focus {
-        cursor: pointer;
-      }
-
+      
       input {
         font-size: var(--inputFontSize);
+        padding: var(--paddingShorthand);
+        border-radius: var(--borderRadiusShorthand);
+        border: var(--inputBorderShorthand);
+        margin: var(--marginShorthand);
+        background: var(--inputBackground);
       }
 
       label {
         font-size: var(--labelFontSize);
-      }
-
-      button {
-        background: var(--buttonBackground);
-        font-size: var(--buttonFontSize)
-      }
-
-      .result {
-        color: var(--errorColour);
       }
 
       .isHidden {
@@ -90,7 +53,7 @@ EnsLookupTemplate.innerHTML = `
         <slot name="input-label"></slot>
       </label>
       <div class='inputWrapper'>
-        <input id='EnsLookup' value type='text' />
+        <input id='ensLookup' value type='text' />
       </div>
       <span class='result isHidden'></span>
     </div>
@@ -109,15 +72,15 @@ class EnsLookup extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['query'];
+    return ['result', 'error'];
   }
 
   connectedCallback() {
     if (this.$input.isConnected) {
       this.$input.oninput = e => {
-        this.dispatchEvent(new CustomEvent('ensLookupChanged', { detail: { maxValue: e.target.value } }));
+        this.dispatchEvent(new CustomEvent('ensLookupChanged', { detail: { query: e.target.value } }));
       };
-      this.$input.setAttribute('placeholder', '0xf0...');
+      this.$input.setAttribute('placeholder', '0x...');
 
       if (this.attributes['input']) {
         const attrMap = this.attributes.getNamedItem('input');
@@ -143,24 +106,36 @@ class EnsLookup extends HTMLElement {
     }
   }
 
-  showValidationMessage(direction) {
+  showResultMessage(direction) {
     if (direction === 'show') {
-      this.$error.classList.remove('isHidden');
+      this.$result.classList.remove('isHidden');
     }
     if (direction === 'hide') {
-      if (!this.$error.classList.contains('isHidden')) this.$error.classList.add('isHidden');
+      if (!this.$result.classList.contains('isHidden')) this.$error.classList.add('isHidden');
     }
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    if (name === 'query') {
-      console.log('newValue', newValue);
-      // this.$error.innerText = !newValue ? 'This field is required.' : newValue;
-      // if (!newValue && !this.invalid) {
-      //   this.showValidationMessage('hide');
-      // } else {
-      //   this.showValidationMessage('show');
-      // }
+    if (name === 'result') {
+      console.log('result', newValue);
+      this.$result.textContent = newValue;
+      if (!this.$result.classList.contains('isError')) this.$result.classList.remove('isError');
+      if (!newValue && !this.invalid) {
+        this.showResultMessage('hide');
+      } else {
+        this.showResultMessage('show');
+      }
+    }
+
+    if (name === 'error' && newValue) {
+      console.log('error', newValue);
+      this.$result.classList.add('isError');
+      this.$result.textContent = newValue;
+      if (!newValue && !this.invalid) {
+        this.showResultMessage('hide');
+      } else {
+        this.showResultMessage('show');
+      }
     }
   }
 }

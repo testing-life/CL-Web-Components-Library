@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <script type="module">
   import { Services, MaxInput, TrimAddress, EnsLookup } from './index.js';
+  import { ethers } from 'https://cdn.ethers.io/lib/ethers-5.2.esm.min.js';
   window.services = Services;
-  console.log('window.serv', window.services, Services);
+  window.ethers = ethers;
 </script>
 <html lang="en">
   <head>
@@ -71,7 +72,8 @@
     <max-input required id="input2" input="666" error="" max="999" layout=""> </max-input>
     <max-input required id="input2" input="666" error="" max="999"> </max-input>
     <h3>ens lookup</h3>
-    <ens-lookup query="0xff2234"> </ens-lookup>
+    <ens-lookup result="" error=""> </ens-lookup>
+    <ens-lookup id="ensLookup" resut="" error=""> </ens-lookup>
     <script>
       const input = document.getElementById('input1');
       input.addEventListener('maxInputChanged', e => console.log('e.value', e.detail));
@@ -86,6 +88,34 @@
       const toggleError = document.getElementById('errorFlip');
       toggleError.addEventListener('click', () => {
         input2.setAttribute('error', 'other error');
+      });
+
+      const ensInput = document.querySelector('ens-lookup');
+      ensInput.addEventListener('ensLookupChanged', async e => {
+        const elem = document.querySelector('ens-lookup');
+        const provider = ethers.providers.getDefaultProvider();
+        if (provider) {
+          const lookup = async address => await provider.lookupAddress(address);
+          const res = await lookup('0x21bF0f34752a35E989002c2e6A78D5Df6BC7aE6F').catch(e =>
+            elem.setAttribute('error', e),
+          );
+          if (elem && res) {
+            elem.setAttribute('result', res);
+          }
+        }
+      });
+
+      const ensInput2 = document.querySelector('#ensLookup');
+      ensInput2.addEventListener('ensLookupChanged', async e => {
+        const elem = document.querySelector('ens-lookup');
+        const provider = ethers.providers.getDefaultProvider();
+        if (provider) {
+          const lookup = async address => await provider.resolveName(name);
+          const res = await lookup('tsabar.eth').catch(e => elem.setAttribute('error', e));
+          if (elem && res) {
+            elem.setAttribute('result', res);
+          }
+        }
       });
     </script>
   </body>
