@@ -92,32 +92,36 @@
 
       const ensInput = document.querySelector('ens-lookup');
       ensInput.addEventListener('ensLookupChanged', async e => {
-        const elem = document.querySelector('ens-lookup');
+        if (e.detail === '') {
+          ensInput.setAttribute('result', '');
+          return;
+        }
+        ensInput.setAttribute('result', 'loading...');
         const provider = ethers.providers.getDefaultProvider();
-        console.log('e', e);
         if (provider) {
-          const resolver = async name => await provider.getResolver(name);
-          const res = await resolver('0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41').catch(e =>
-            elem.setAttribute('error', e),
-          );
-          // elem.setAttribute('result', 'loading...');
-          if (elem && res) {
-            elem.setAttribute('result', res.name);
+          // 0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41
+          // ricmoo.eth
+          const resolver = async name => await provider.lookupAddress(name);
+          const res = await resolver(e.detail).catch(e => ensInput.setAttribute('error', e));
+          if (ensInput && res) {
+            ensInput.setAttribute('result', res);
           }
         }
       });
 
       const ensInput2 = document.querySelector('#ensLookup');
       ensInput2.addEventListener('ensLookupChanged', async e => {
-        const elem = document.querySelector('#ensLookup');
+        if (e.detail === '') {
+          ensInput2.setAttribute('result', '');
+          return;
+        }
+        ensInput2.setAttribute('result', 'loading...');
         const provider = ethers.providers.getDefaultProvider();
-        console.log('e', e);
         if (provider) {
           const resolver = async name => await provider.getResolver(name);
-          const res = await resolver('ricmoo.eth').catch(e => elem.setAttribute('error', e));
-          // elem.setAttribute('result', 'loading...');
-          if (elem && res) {
-            elem.setAttribute('result', res.address);
+          const res = await resolver(e.detail).catch(e => elem.setAttribute('error', e));
+          if (ensInput2 && res) {
+            ensInput2.setAttribute('result', res.address);
           }
         }
       });

@@ -77,9 +77,8 @@ class EnsLookup extends HTMLElement {
 
   connectedCallback() {
     if (this.$input.isConnected) {
-      console.log('window', window);
       this.$input.oninput = e => {
-        this.dispatchEvent(new CustomEvent('ensLookupChanged', { detail: { query: e.target.value } }));
+        this.dispatchEvent(new CustomEvent('ensLookupChanged', { detail: e.target.value }));
       };
       this.$input.setAttribute('placeholder', '0x...');
 
@@ -111,7 +110,7 @@ class EnsLookup extends HTMLElement {
       this.$result.classList.remove('isHidden');
     }
     if (direction === 'hide') {
-      if (!this.$result.classList.contains('isHidden')) this.$error.classList.add('isHidden');
+      if (!this.$result.classList.contains('isHidden')) this.$result.classList.add('isHidden');
     }
   }
 
@@ -119,7 +118,7 @@ class EnsLookup extends HTMLElement {
     if (name === 'result') {
       this.$result.textContent = newValue;
       if (!this.$result.classList.contains('isError')) this.$result.classList.remove('isError');
-      if (!newValue && !this.invalid) {
+      if (!newValue) {
         this.showResultMessage('hide');
       } else {
         this.showResultMessage('show');
