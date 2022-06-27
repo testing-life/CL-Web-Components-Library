@@ -94,26 +94,30 @@
       ensInput.addEventListener('ensLookupChanged', async e => {
         const elem = document.querySelector('ens-lookup');
         const provider = ethers.providers.getDefaultProvider();
+        console.log('e', e);
         if (provider) {
-          const lookup = async address => await provider.lookupAddress(address);
-          const res = await lookup('0x21bF0f34752a35E989002c2e6A78D5Df6BC7aE6F').catch(e =>
+          const resolver = async name => await provider.getResolver(name);
+          const res = await resolver('0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41').catch(e =>
             elem.setAttribute('error', e),
           );
+          // elem.setAttribute('result', 'loading...');
           if (elem && res) {
-            elem.setAttribute('result', res);
+            elem.setAttribute('result', res.name);
           }
         }
       });
 
       const ensInput2 = document.querySelector('#ensLookup');
       ensInput2.addEventListener('ensLookupChanged', async e => {
-        const elem = document.querySelector('ens-lookup');
+        const elem = document.querySelector('#ensLookup');
         const provider = ethers.providers.getDefaultProvider();
+        console.log('e', e);
         if (provider) {
-          const lookup = async address => await provider.resolveName(name);
-          const res = await lookup('tsabar.eth').catch(e => elem.setAttribute('error', e));
+          const resolver = async name => await provider.getResolver(name);
+          const res = await resolver('ricmoo.eth').catch(e => elem.setAttribute('error', e));
+          // elem.setAttribute('result', 'loading...');
           if (elem && res) {
-            elem.setAttribute('result', res);
+            elem.setAttribute('result', res.address);
           }
         }
       });

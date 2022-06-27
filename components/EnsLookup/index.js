@@ -77,6 +77,7 @@ class EnsLookup extends HTMLElement {
 
   connectedCallback() {
     if (this.$input.isConnected) {
+      console.log('window', window);
       this.$input.oninput = e => {
         this.dispatchEvent(new CustomEvent('ensLookupChanged', { detail: { query: e.target.value } }));
       };
@@ -95,7 +96,6 @@ class EnsLookup extends HTMLElement {
 
       this.$input.addEventListener('input', event => {
         if (!event.target.value && this.hasAttribute('required')) {
-          console.log('event.target.value', event.target.value);
           this.invalid = true;
         } else {
           this.invalid = false;
@@ -117,7 +117,6 @@ class EnsLookup extends HTMLElement {
 
   attributeChangedCallback(name, oldValue, newValue) {
     if (name === 'result') {
-      console.log('result', newValue);
       this.$result.textContent = newValue;
       if (!this.$result.classList.contains('isError')) this.$result.classList.remove('isError');
       if (!newValue && !this.invalid) {
@@ -128,7 +127,6 @@ class EnsLookup extends HTMLElement {
     }
 
     if (name === 'error' && newValue) {
-      console.log('error', newValue);
       this.$result.classList.add('isError');
       this.$result.textContent = newValue;
       if (!newValue && !this.invalid) {
