@@ -128,3 +128,45 @@ export default MaxInputWebComponent;
     error={!!estimatesError || !!balanceError ? 'Amount entered exceeds wallet balance' : ''}
 />
 ```
+
+## Inheritable CSS properties
+
+We components can inherit some css properties from parent/global scope, eliminating the need to repeat them within the component.
+
+- border-collapse
+- border-spacing
+- caption-side
+- color
+- cursor
+- direction
+- empty-cells
+- font-family
+- font-size
+- font-style
+- font-variant
+- font-weight
+- font-size-adjust
+- font-stretch
+- font
+- letter-spacing
+- line-height
+- list-style-image
+- list-style-position
+- list-style-type
+- list-style
+- orphans
+- quotes
+- tab-size
+- text-align
+- text-align-last
+- text-decoration-color
+- text-indent
+- text-justify
+- text-shadow
+- text-transform
+- visibility
+- white-space
+- widows
+- word-break
+- word-spacing
+- word-wrap
