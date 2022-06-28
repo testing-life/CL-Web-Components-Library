@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <script type="module">
-  import { Services, MaxInput, TrimAddress } from './index.js';
+  import { Services, MaxInput, TrimAddress, EnsLookup } from './index.js';
+  import { ethers } from 'https://cdn.ethers.io/lib/ethers-5.2.esm.min.js';
   window.services = Services;
-  console.log('window.serv', window.services, Services);
+  window.ethers = ethers;
 </script>
 <html lang="en">
   <head>
@@ -12,9 +13,6 @@
     <title>Document</title>
     <!-- <script type="module" src="https://unpkg.com/cl-webcomp-poc@0.0.1/MaxInput"></script> -->
     <!-- <script type="module" src="https://unpkg.com/cl-webcomp-poc@-0.0.1/TrimAddress"></script> -->
-    <!-- <script src="./components/TrimAddress/index.js"></script> -->
-    <!-- <script src="./components/MaxInput/index.js"></script> -->
-    <!-- <script type="module" src="./index.js"></script> -->
     <style>
       body {
         font-family: Arial, Helvetica, sans-serif;
@@ -70,7 +68,9 @@
     <h2>no layout attr</h2>
     <max-input required id="input2" input="666" error="" max="999" layout=""> </max-input>
     <max-input required id="input2" input="666" error="" max="999"> </max-input>
-
+    <h3>ens lookup</h3>
+    <ens-lookup result="" error=""> </ens-lookup>
+    <ens-lookup id="ensLookup" resut="" error=""> </ens-lookup>
     <script>
       const input = document.getElementById('input1');
       input.addEventListener('maxInputChanged', e => console.log('e.value', e.detail));
@@ -85,6 +85,42 @@
       const toggleError = document.getElementById('errorFlip');
       toggleError.addEventListener('click', () => {
         input2.setAttribute('error', 'other error');
+      });
+
+      const ensInput = document.querySelector('ens-lookup');
+      ensInput.addEventListener('ensLookupChanged', async e => {
+        if (e.detail === '') {
+          ensInput.setAttribute('result', '');
+          return;
+        }
+        ensInput.setAttribute('result', 'loading...');
+        const provider = ethers.providers.getDefaultProvider();
+        if (provider) {
+          // 0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41
+          // ricmoo.eth
+          const resolver = async name => await provider.getResolver(name);
+          const res = await resolver(e.detail).catch(e => ensInput.setAttribute('error', e));
+          if (ensInput && res) {
+            ensInput.setAttribute('result', res.name);
+          }
+        }
+      });
+
+      const ensInput2 = document.querySelector('#ensLookup');
+      ensInput2.addEventListener('ensLookupChanged', async e => {
+        if (e.detail === '') {
+          ensInput2.setAttribute('result', '');
+          return;
+        }
+        ensInput2.setAttribute('result', 'loading...');
+        const provider = ethers.providers.getDefaultProvider();
+        if (provider) {
+          const resolver = async name => await provider.getResolver(name);
+          const res = await resolver(e.detail).catch(e => elem.setAttribute('error', e));
+          if (ensInput2 && res) {
+            ensInput2.setAttribute('result', res.address);
+          }
+        }
       });
     </script>
   </body>
