@@ -3,7 +3,7 @@
   import { Services, MaxInput, TrimAddress, EnsLookup, AutoCompleteSelect } from './index.js';
   // import { ethers } from 'https://cdn.ethers.io/lib/ethers-5.2.esm.min.js';
   window.services = Services;
-  window.ethers = ethers;
+  // window.ethers = ethers;
 </script>
 <html lang="en">
   <head>
@@ -78,67 +78,128 @@
     <p>text</p>
     <p>text</p>
     <script>
-      const input = document.getElementById('input1');
-      input.addEventListener('maxInputChanged', e => console.log('e.value', e.detail));
-      const input2 = document.getElementById('input2');
-      input2.addEventListener('maxInputChanged', e => console.log('e.value2', e.detail));
+      const input = document.getElementById( 'input1' )
+      input.addEventListener( 'maxInputChanged', e => console.log( 'e.value', e.detail ) )
+      const input2 = document.getElementById( 'input2' )
+      input2.addEventListener( 'maxInputChanged', e => console.log( 'e.value2', e.detail ) );
 
-      const toggle = document.getElementById('attrFlip');
-      toggle.addEventListener('click', () => {
-        input2.setAttribute('layout', 'boxy');
-      });
+      const toggle = document.getElementById( 'attrFlip' )
+      toggle.addEventListener( 'click', () => {
+        input2.setAttribute( 'layout', 'boxy' )
+      } )
 
-      const toggleError = document.getElementById('errorFlip');
-      toggleError.addEventListener('click', () => {
-        input2.setAttribute('error', 'other error');
-      });
+      const toggleError = document.getElementById( 'errorFlip' )
+      toggleError.addEventListener( 'click', () => {
+        input2.setAttribute( 'error', 'other error' )
+      } )
 
-      const ensInput = document.querySelector('ens-lookup');
-      ensInput.addEventListener('ensLookupChanged', async e => {
-        if (e.detail === '') {
-          ensInput.setAttribute('result', '');
-          return;
+      const ensInput = document.querySelector( 'ens-lookup' )
+      ensInput.addEventListener( 'ensLookupChanged', async e => {
+        if ( e.detail === '' ) {
+          ensInput.setAttribute( 'result', '' )
+          return
         }
-        ensInput.setAttribute('result', 'loading...');
-        const provider = ethers.providers.getDefaultProvider();
-        if (provider) {
-          // 0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41
-          // ricmoo.eth
-          const resolver = async name => await provider.getResolver(name);
-          const res = await resolver(e.detail).catch(e => ensInput.setAttribute('error', e));
-          if (ensInput && res) {
-            ensInput.setAttribute('result', res.name);
-          }
+      ensInput.setAttribute( 'result', 'loading...' )
+      const provider = ethers.providers.getDefaultProvider();
+      if ( provider ) {
+// 0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41
+// ricmoo.eth
+      const resolver = async name => await provider.getResolver( name )
+      const res = await resolver( e.detail ).catch( e => ensInput.setAttribute( 'error', e ) )
+      if ( ensInput && res ) {
+        ensInput.setAttribute( 'result', res.name )
+      }
+    }
+    } );
+
+      const ensInput2 = document.querySelector( '#ensLookup' )
+      ensInput2.addEventListener( 'ensLookupChanged', async e => {
+        if ( e.detail === '' ) {
+          ensInput2.setAttribute( 'result', '' )
+          return
         }
-      });
-
-      const ensInput2 = document.querySelector('#ensLookup');
-      ensInput2.addEventListener('ensLookupChanged', async e => {
-        if (e.detail === '') {
-          ensInput2.setAttribute('result', '');
-          return;
+      ensInput2.setAttribute( 'result', 'loading...' )
+      const provider = ethers.providers.getDefaultProvider()
+      if ( provider ) {
+        const resolver = async name => await provider.getResolver( name )
+        const res = await resolver( e.detail ).catch( e => elem.setAttribute( 'error', e ) )
+        if ( ensInput2 && res ) {
+          ensInput2.setAttribute( 'result', res.address )
         }
-        ensInput2.setAttribute('result', 'loading...');
-        const provider = ethers.providers.getDefaultProvider();
-        if (provider) {
-          const resolver = async name => await provider.getResolver(name);
-          const res = await resolver(e.detail).catch(e => elem.setAttribute('error', e));
-          if (ensInput2 && res) {
-            ensInput2.setAttribute('result', res.address);
-          }
+      }
+    } )
+
+      const select = document.querySelector( '#select' )
+
+      const dataObj = {
+        "ac55f20b-7625-465c-80a5-a57e22829716": {
+          "name": "Loot Character - Western Dawn",
+          "avatarUrl": "https://deepdao-uploads.s3.us-east-2.amazonaws.com/assets/snapshots/spaces/westerndawn.eth.png",
+          "treasuryAddresses": [ "westerndawn.eth" ]
+        },
+        "d595933e-9fa6-4ae0-a12f-4f0ffda7126b": {
+          "name": "We Are Dorkis",
+          "avatarUrl": "https://deepdao-uploads.s3.us-east-2.amazonaws.com/assets/snapshots/spaces/wearedorkis.eth.png",
+          "treasuryAddresses": [ "wearedorkis.eth" ]
+        },
+        "d9c9fae9-049f-4123-805b-37bbb7b3c931": {
+          "name": "Unity Project",
+          "avatarUrl": null,
+          "treasuryAddresses": [ "unityproject.eth" ]
+        },
+        "cf96cfd6-1645-43b7-b1d0-467eb49ede51": {
+          "name": "Good Karma Records",
+          "avatarUrl": null,
+          "treasuryAddresses": [ "goodkarmarecords.eth" ]
+        },
+        "c6b1a36c-ad0c-492d-bc03-e1c5060678fe": {
+          "name": "Matt",
+          "avatarUrl": "https://deepdao-uploads.s3.us-east-2.amazonaws.com/assets/snapshots/spaces/mattbrown.eth.png",
+          "treasuryAddresses": [ "mattbrown.eth" ]
+        },
+        "b2b41fb1-8c52-4e36-84d9-2d520c2b26e7": {
+          "name": "DEXTF",
+          "avatarUrl": "https://deepdao-uploads.s3.us-east-2.amazonaws.com/assets/dao/logo/dextf.png",
+          "treasuryAddresses": [ "dextfprotocol.eth" ]
+        },
+        "cf3cb560-52a8-41d8-a93b-84474cab8dfe": {
+          "name": "Fantoms On Opera | RandomZ's Lab",
+          "avatarUrl": null,
+          "treasuryAddresses": [ "randomz.eth" ]
+        },
+        "cc48cb1e-89cf-465c-b480-e318e5f50089": {
+          "name": "DAO4EVER",
+          "avatarUrl": null,
+          "treasuryAddresses": [ "dao4ever.eth" ]
+        },
+        "b08eb5b1-77d9-4d83-a577-fbb2d43343b2": {
+          "name": "Viral Crypto",
+          "avatarUrl": null,
+          "treasuryAddresses": [ "viralcrypto.eth" ]
+        },
+        "ca6c4373-834e-44dc-93c0-1ec0bf61ceb7": {
+          "name": "sanyue",
+          "avatarUrl": null,
+          "treasuryAddresses": [ "sanyue.eth" ]
         }
-      });
+      }
 
-      const select = document.querySelector('#select');
-      const data =
-        '[{"name":"We Are Dorkis","avatarUrl":"https://deepdao-uploads.s3.us-east-2.amazonaws.com/assets/snapshots/spaces/wearedorkis.eth.png","treasuryAddresses":["wearedorkis.eth"], "id": "d595933e-9fa6-4ae0-a12f-4f0ffda7126b"},{"name":"Unity Project","avatarUrl":null,"treasuryAddresses":["unityproject.eth"], "id": "d9c9fae9-049f-4123-805b-37bbb7b3c931"},{"name":"Good Karma Records","avatarUrl":null,"treasuryAddresses":["goodkarmarecords.eth"], "id": "cf96cfd6-1645-43b7-b1d0-467eb49ede51"}]';
-      // '{"d595933e-9fa6-4ae0-a12f-4f0ffda7126b":{"name":"We Are Dorkis","avatarUrl":"https://deepdao-uploads.s3.us-east-2.amazonaws.com/assets/snapshots/spaces/wearedorkis.eth.png","treasuryAddresses":["wearedorkis.eth"]},"d9c9fae9-049f-4123-805b-37bbb7b3c931":{"name":"Unity Project","avatarUrl":null,"treasuryAddresses":["unityproject.eth"]},"cf96cfd6-1645-43b7-b1d0-467eb49ede51":{"name":"Good Karma Records","avatarUrl":null,"treasuryAddresses":["goodkarmarecords.eth"]}}';
+  arr = Object.keys( dataObj ).map( item => {
+    return { ...dataObj[ item ], id: item }
+  } )
 
-      select.setAttribute('options', data);
+      const data = JSON.stringify( arr )
+    // '[{"name":"We Are Dorkis","avatarUrl":"https://deepdao-uploads.s3.us-east-2.amazonaws.com/assets/snapshots/spaces/wearedorkis.eth.png","treasuryAddresses":["wearedorkis.eth"], "id": "d595933e-9fa6-4ae0-a12f-4f0ffda7126b"},{"name":"Unity Project","avatarUrl":null,"treasuryAddresses":["unityproject.eth"], "id": "d9c9fae9-049f-4123-805b-37bbb7b3c931"},{"name":"Good Karma Records","avatarUrl":null,"treasuryAddresses":["goodkarmarecords.eth"], "id": "cf96cfd6-1645-43b7-b1d0-467eb49ede51"}]';
+    // '{"d595933e-9fa6-4ae0-a12f-4f0ffda7126b":{"name":"We Are Dorkis","avatarUrl":"https://deepdao-uploads.s3.us-east-2.amazonaws.com/assets/snapshots/spaces/wearedorkis.eth.png","treasuryAddresses":["wearedorkis.eth"]},"d9c9fae9-049f-4123-805b-37bbb7b3c931":{"name":"Unity Project","avatarUrl":null,"treasuryAddresses":["unityproject.eth"]},"cf96cfd6-1645-43b7-b1d0-467eb49ede51":{"name":"Good Karma Records","avatarUrl":null,"treasuryAddresses":["goodkarmarecords.eth"]}}';
 
-      select.addEventListener('newDaoAdded', e => {
-        console.log('new dao added', e.detail);
-      });
+      select.setAttribute( 'options', data );
+
+      select.addEventListener( 'newDaoAdded', e => {
+        console.log( 'new dao added', e.detail )
+      } );
+      select.addEventListener( 'daoSelectionChanged', e => {
+        console.log( 'selected', e.detail, dataObj[ e.detail.id ] )
+      } );
     </script>
   </body>
 </html>

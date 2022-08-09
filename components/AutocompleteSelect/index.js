@@ -187,11 +187,12 @@ class AutoCompleteSelect extends HTMLElement {
 
     if (this.$addButton.isConnected) {
       this.$addButton.addEventListener('click', e => {
-        const newItem = this.$input.value;
+        const newItem = { name: this.$input.value, avatarUrl: "", treasuryAddresses: [], id: Date.now().toString() };
         if (newItem && (this._options.filter(option => option.name === newItem)).length === 0) {
-          this._options.push({ name: newItem, avatarUrl: "", treasuryAddresses: [], id: Date.now() });
+          this._options.push(newItem);
           this.buildList(this._options);
           this.dispatchEvent(new CustomEvent('newDaoAdded', { detail: { newDao: newItem } }));
+          this.dispatchEvent(new CustomEvent('daoSelectionChanged', { detail: { ...newItem } }));
         }
         this.$addButton.blur();
       });
@@ -281,10 +282,18 @@ class AutoCompleteSelect extends HTMLElement {
     const listFragment = document.createDocumentFragment();
     data.forEach(option => {
       try {
-        const li = document.createElement('li');
-        li.innerHTML = `<div class="listItem"><img height="20" src='${option.avatarUrl}' /><span>${option.name}</span></div>`;
+        const img = document.createElement('img')
+        const span = document.createElement('span');
+        const li = document.createElement('li')
+        img.setAttribute("src",option.avatarUrl);
+        img.setAttribute("width", 20);
+        span.innerText = option.name;
+        li.appendChild(img)
+        li.appendChild(span);
+        li.classList.add("listItem");
         li.addEventListener("click", (e) => {
           this.$input.value = e.target.innerText;
+          this.dispatchEvent(new CustomEvent('daoSelectionChanged', { detail: { ...option } }));
         });
         listFragment.appendChild(li);
       } catch (error) {
