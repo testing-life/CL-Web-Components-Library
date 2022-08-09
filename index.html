@@ -131,6 +131,10 @@
       // '{"d595933e-9fa6-4ae0-a12f-4f0ffda7126b":{"name":"We Are Dorkis","avatarUrl":"https://deepdao-uploads.s3.us-east-2.amazonaws.com/assets/snapshots/spaces/wearedorkis.eth.png","treasuryAddresses":["wearedorkis.eth"]},"d9c9fae9-049f-4123-805b-37bbb7b3c931":{"name":"Unity Project","avatarUrl":null,"treasuryAddresses":["unityproject.eth"]},"cf96cfd6-1645-43b7-b1d0-467eb49ede51":{"name":"Good Karma Records","avatarUrl":null,"treasuryAddresses":["goodkarmarecords.eth"]}}';
 
       select.setAttribute('options', data);
+
+      select.addEventListener('newDaoAdded', e => {
+        console.log('new dao added', e.detail);
+      });
     </script>
   </body>
 </html>

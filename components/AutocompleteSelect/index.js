@@ -172,6 +172,7 @@ class AutoCompleteSelect extends HTMLElement {
         if (newItem) {
           this._options.push({ name: newItem });
           this.buildList(this._options);
+          this.dispatchEvent(new CustomEvent('newDaoAdded', { detail: { newDao: newItem } }));
         }
       });
     }
