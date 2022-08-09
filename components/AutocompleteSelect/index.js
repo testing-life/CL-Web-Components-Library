@@ -114,10 +114,10 @@ autoCompleteSelectTemplate.innerHTML = `
       </label>
       <div class='inputWrapper'>
         <input id='textInput' value type='text' />
-        <button>+</button>
+        <button class='addOption'>+</button>
       </div>
       <span class='errorMessage isHidden'></span>
-      <div class='optionsWrapper'></div>
+      <div class='optionsWrapper isHidden'></div>
     </div>
 `;
 
@@ -133,8 +133,10 @@ class AutoCompleteSelect extends HTMLElement {
     this.$input = this.shadowRoot.querySelector('input');
     // this.$label = this.shadowRoot.querySelector('label');
     // this.$error = this.shadowRoot.querySelector('.errorMessage');
+    this.$inputWrapper = this.shadowRoot.querySelector('.inputWrapper');
     this.$addButton = this.shadowRoot.querySelector('button');
     this.$optionsWrapper = this.shadowRoot.querySelector('.optionsWrapper');
+    this.$addButton = this.shadowRoot.querySelector('.addOption');
   }
 
   // set options(value) {
@@ -164,6 +166,26 @@ class AutoCompleteSelect extends HTMLElement {
     //   this.buildList(this._options);
     // }
 
+    if (this.$addButton.isConnected) {
+      this.$addButton.addEventListener('click', e => {
+        const newItem = this.$input.value;
+        if (newItem) {
+          this._options.push({ name: newItem });
+          this.buildList(this._options);
+        }
+      });
+    }
+
+    if (this.$inputWrapper.isConnected) {
+      document.onclick = e => {
+        console.log('document.activeElement', this.shadowRoot.activeElement);
+        console.log('e.target', e.target, 'active:', this.$inputWrapper.contains(this.shadowRoot.activeElement));
+        this.$optionsWrapper.classList[this.$inputWrapper.contains(this.shadowRoot.activeElement) ? 'remove' : 'add'](
+          'isHidden',
+        );
+      };
+    }
+
     if (this.$input.isConnected) {
       this.$input.addEventListener('input', e => {
         const filteredList = e.target.value
@@ -173,6 +195,14 @@ class AutoCompleteSelect extends HTMLElement {
 
         console.log('filter', filteredList);
       });
+
+      // this.$input.addEventListener('focus', e => {
+      //   this.$optionsWrapper.classList.remove('isHidden');
+      // });
+
+      // this.$input.addEventListener('blur', e => {
+      //   this.$optionsWrapper.classList.add('isHidden');
+      // });
     }
   }
   //   if (this.$input.isConnected) {
