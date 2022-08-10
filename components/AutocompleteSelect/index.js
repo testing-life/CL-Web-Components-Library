@@ -24,9 +24,13 @@ autoCompleteSelectTemplate.innerHTML = `
         font-family: inherit;
         color:inherit;
       }
+      .inputWrapper {
+        background: pink;
+      }
       
       .texty {
         display: flex;
+        flex-direction: column;
         align-items: baseline;
       }
 
@@ -87,16 +91,32 @@ autoCompleteSelectTemplate.innerHTML = `
 
       input, #textInput {
         font-size: var(--inputFontSize);
-        background: pink;
+      }
+
+      .optionsWrapper {
+        background: white;
+        border: 1px solid black;
+        position: absolute;
+        margin-top: 20px;
+        max-height: 200px;
+        overflow-y: auto;
       }
 
       label {
         font-size: var(--labelFontSize);
       }
 
-      button {
-        background: var(--buttonBackground);
-        font-size: var(--buttonFontSize)
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      li {
+        cursor: pointer;
+      }
+      li:hover {
+        background-color: pink;
       }
 
       .errorMessage {
@@ -106,7 +126,6 @@ autoCompleteSelectTemplate.innerHTML = `
       .isHidden {
         display: none;
       }
-
     </style>
     <div id='selectInput' class='texty'>
       <label>
@@ -142,12 +161,14 @@ class AutoCompleteSelect extends HTMLElement {
   connectedCallback() {
     if (this.$addButton.isConnected) {
       this.$addButton.addEventListener('click', e => {
-        const newItem = this.$input.value;
-        if (newItem) {
-          this._options.push({ name: newItem });
+        const newItem = { name: this.$input.value, avatarUrl: "", treasuryAddresses: [], id: Date.now().toString() };
+        if (newItem && (this._options.filter(option => option.name === newItem)).length === 0) {
+          this._options.push(newItem);
           this.buildList(this._options);
           this.dispatchEvent(new CustomEvent('newDaoAdded', { detail: { newDao: newItem } }));
+          this.dispatchEvent(new CustomEvent('daoSelectionChanged', { detail: { ...newItem } }));
         }
+        this.$addButton.blur();
       });
     }
 
@@ -179,8 +200,19 @@ class AutoCompleteSelect extends HTMLElement {
     const listFragment = document.createDocumentFragment();
     data.forEach(option => {
       try {
-        const li = document.createElement('li');
-        li.textContent = option.name;
+        const img = document.createElement('img')
+        const span = document.createElement('span');
+        const li = document.createElement('li')
+        img.setAttribute("src",option.avatarUrl);
+        img.setAttribute("width", 20);
+        span.innerText = option.name;
+        li.appendChild(img)
+        li.appendChild(span);
+        li.classList.add("listItem");
+        li.addEventListener("click", (e) => {
+          this.$input.value = e.target.innerText;
+          this.dispatchEvent(new CustomEvent('daoSelectionChanged', { detail: { ...option } }));
+        });
         listFragment.appendChild(li);
       } catch (error) {
         console.error(error);
