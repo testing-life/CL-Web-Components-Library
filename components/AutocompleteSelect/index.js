@@ -128,44 +128,18 @@ class AutoCompleteSelect extends HTMLElement {
     this.shadowRoot.appendChild(autoCompleteSelectTemplate.content.cloneNode(true));
     this._options = [];
     this._filteredOptions = [];
-    // this.invalid = false;
     this.$wrapper = this.shadowRoot.querySelector('#selectInput');
     this.$input = this.shadowRoot.querySelector('input');
-    // this.$label = this.shadowRoot.querySelector('label');
-    // this.$error = this.shadowRoot.querySelector('.errorMessage');
     this.$inputWrapper = this.shadowRoot.querySelector('.inputWrapper');
-    this.$addButton = this.shadowRoot.querySelector('button');
     this.$optionsWrapper = this.shadowRoot.querySelector('.optionsWrapper');
     this.$addButton = this.shadowRoot.querySelector('.addOption');
   }
-
-  // set options(value) {
-  //   this._options = value;
-  // }
-
-  // get options() {
-  //   return this._options;
-  // }
 
   static get observedAttributes() {
     return ['error', 'options'];
   }
 
   connectedCallback() {
-    // if (this.$input.isConnected) {
-    //   this.$maxButton.onclick = () => this.maximiseValue();
-    //   if (this.attributes['layout']) {
-    //     if (this.getAttribute('layout')) {
-    //       this.$wrapper.classList.replace('texty', this.getAttribute('layout'));
-    //       this.toggleButtonLabel(this.getAttribute('layout'));
-    //     }
-    //   }
-    // }
-
-    // if (this.$optionsList.isConnected) {
-    //   this.buildList(this._options);
-    // }
-
     if (this.$addButton.isConnected) {
       this.$addButton.addEventListener('click', e => {
         const newItem = this.$input.value;
@@ -179,8 +153,6 @@ class AutoCompleteSelect extends HTMLElement {
 
     if (this.$inputWrapper.isConnected) {
       document.onclick = e => {
-        console.log('document.activeElement', this.shadowRoot.activeElement);
-        console.log('e.target', e.target, 'active:', this.$inputWrapper.contains(this.shadowRoot.activeElement));
         this.$optionsWrapper.classList[this.$inputWrapper.contains(this.shadowRoot.activeElement) ? 'remove' : 'add'](
           'isHidden',
         );
@@ -194,64 +166,10 @@ class AutoCompleteSelect extends HTMLElement {
           : this._options;
         this.buildList(filteredList);
 
-        console.log('filter', filteredList);
       });
-
-      // this.$input.addEventListener('focus', e => {
-      //   this.$optionsWrapper.classList.remove('isHidden');
-      // });
-
-      // this.$input.addEventListener('blur', e => {
-      //   this.$optionsWrapper.classList.add('isHidden');
-      // });
     }
   }
-  //   if (this.$input.isConnected) {
-  //     // this.$input.oninput = e => {
-  //     //   this.dispatchEvent(new CustomEvent('maxInputChanged', { detail: { maxValue: e.target.value } }));
-  //     // };
-  //     // this.$input.setAttribute('placeholder', 'Enter value');
-
-  //     // if (this.attributes['input']) {
-  //     //   const attrMap = this.attributes.getNamedItem('input');
-  //     //   this.$input.value = attrMap.value;
-  //     // }
-
-  //       this.$label.addEventListener('input', (e) => {
-  //         this.$input.focus();
-  //       });
-
-  //   //   this.$input.addEventListener('input', event => {
-  //   //     if (!event.target.value && this.hasAttribute('required')) {
-  //   //       this.invalid = true;
-  //   //       this.$error.innerText = 'This field is required.';
-  //   //       this.showValidationMessage('show');
-  //   //     } else {
-  //   //       this.invalid = false;
-  //   //       this.showValidationMessage('hide');
-  //   //       this.value = event.target.value;
-  //   //       this.setAttribute('input', event.target.value);
-  //   //     }
-  //   //   });
-  //   // }
-  // }
-
-  // toggleButtonLabel(layout) {
-  //   if (layout === 'boxy') {
-  //     this.$maxButton.innerHTML = 'MAX';
-  //   } else {
-  //     this.$maxButton.innerHTML = 'Max amount';
-  //   }
-  // }
-
-  // showValidationMessage(direction) {
-  //   if (direction === 'show') {
-  //     this.$error.classList.remove('isHidden');
-  //   }
-  //   if (direction === 'hide') {
-  //     if (!this.$error.classList.contains('isHidden')) this.$error.classList.add('isHidden');
-  //   }
-  // }
+ 
   buildList(data) {
     const existingList = this.shadowRoot.querySelector('.optionsWrapper ul');
     if (existingList) {
@@ -275,17 +193,9 @@ class AutoCompleteSelect extends HTMLElement {
   attributeChangedCallback(name, oldValue, newValue) {
     if (name === 'options') {
       this._options = JSON.parse(newValue);
-      console.log('options', newValue, JSON.parse(newValue));
       this.buildList(JSON.parse(newValue));
     }
   }
-
-  // maximiseValue() {
-  //   if (this.attributes['max']) {
-  //     this.$input.value = this.getAttribute('max');
-  //     this.$input.dispatchEvent(new Event('input'));
-  //   }
-  // }
 }
 
 window.customElements.define('autocomplete-select', AutoCompleteSelect);
