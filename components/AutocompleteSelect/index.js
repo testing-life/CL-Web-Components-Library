@@ -216,10 +216,11 @@ class AutoCompleteSelect extends HTMLElement {
     }
     const ul = document.createElement('ul');
     ul.addEventListener('click', e => {
-      if(!e.target.dataset.daoId) {
+    const id = e.target.dataset.daoId || e.target.closest('li').dataset.daoId
+      if(!id) {
         return;
       }
-      const result = this._options.find(item => item.name === e.target.innerText);
+      const result = this._options.find(item => item.id === id);
       if(result){
         this.$input.value = e.target.innerText;
         this.dispatchEvent(new CustomEvent('daoSelectionChanged', { detail: { ...result } }));
