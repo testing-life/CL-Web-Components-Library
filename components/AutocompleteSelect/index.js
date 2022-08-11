@@ -131,6 +131,7 @@ autoCompleteSelectTemplate.innerHTML = `
 
       <div class='inputWrapper'>
         <input id='textInput' value type='text' />
+        <button class='clear isHidden'>X</button>
       </div>
 
       <div class='optionsWrapper isHidden'>
@@ -154,6 +155,7 @@ class AutoCompleteSelect extends HTMLElement {
     this.$inputWrapper = this.shadowRoot.querySelector('.inputWrapper');
     this.$optionsWrapper = this.shadowRoot.querySelector('.optionsWrapper');
     this.$addButton = this.shadowRoot.querySelector('.addOption');
+    this.$clearButton = this.shadowRoot.querySelector('.clear');
     this.$noResultMsg = this.shadowRoot.querySelector('.noResult__msg');
   }
 
@@ -162,6 +164,14 @@ class AutoCompleteSelect extends HTMLElement {
   }
 
   connectedCallback() {
+
+    if(this.$clearButton.isConnected) {
+      this.$clearButton.addEventListener('click', e => {
+        this.$input.value = '';
+        this.buildList(this._options);
+      });
+    }
+
     if (this.$addButton.isConnected) {
       this.$addButton.addEventListener('click', e => {
         const newItem = { name: this._tempQuery, avatarUrl: "", treasuryAddresses: [], id: Date.now().toString() };
@@ -192,6 +202,9 @@ class AutoCompleteSelect extends HTMLElement {
           ? this._options.filter(option => option.name.toLowerCase().includes(e.target.value.toLowerCase()))
           : this._options;
         this.buildList(filteredList);
+        if (this.$clearButton.isConnected && this.$clearButton.classList.contains('isHidden') && e.target.value){
+          this.$clearButton.classList.remove('isHidden');
+        }
       });
     }
   }
