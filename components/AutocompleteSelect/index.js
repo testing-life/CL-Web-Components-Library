@@ -182,6 +182,9 @@ class AutoCompleteSelect extends HTMLElement {
         const filteredList = e.target.value
           ? this._options.filter(option => option.name.toLowerCase().includes(e.target.value.toLowerCase()))
           : this._options;
+        if(!filteredList.length){
+          this.$input.value = `No DAO found, add ‘${e.target.value}’ manually`;
+        }
         this.buildList(filteredList);
 
       });
@@ -222,7 +225,7 @@ class AutoCompleteSelect extends HTMLElement {
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    if (name === 'options') {
+    if (name === 'options' && newValue) {
       this._options = JSON.parse(newValue);
       this.buildList(JSON.parse(newValue));
     }
