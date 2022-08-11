@@ -2,105 +2,83 @@ const autoCompleteSelectTemplate = document.createElement('template');
 autoCompleteSelectTemplate.innerHTML = `
     <style>
       :host {
-        --borderShorthand: 1px solid plum;
-        --labelBackground: lightblue;
-        --outlineShorthand: 1px solid olive;
-        --inputBackground: lightsteelblue;
-        --buttonBackground: wheat;
-        --inputBorderShorthand: 1px solid sienna;
-        --borderRadiusShorthand: 5px;
-        --errorColour: firebrick;
-        --paddingShorthand: 5px;
-        --marginShorthand: 5px 0 5px 0;
-        --textDecoration: none;
-        --textBorderBottomShorthand: 2px dotted sienna;
-        --labelFontSize: inherit;
-        --inputFontSize: inherit;
-        --buttonFontSize: inherit;
-      }
+        --borderRadius: 5px;
+        --spacingSmall: 5px;
+        --spacingNormal: 10px;
+        --backgroundNormal: lightsteelblue;
+        --borderNormal: plum;
+        --borderHighlight: pink;
+        --optionHover: pink;
+        --textNormal: black;
+        --textError: red;
+        --buttonIconCode: "\\F002";
+      } 
 
-      * {
+      #selectInput {
         font-size: inherit;
         font-family: inherit;
         color:inherit;
-      }
-      .inputWrapper {
-        background: pink;
-      }
-      
-      .texty {
+        background: var(--backgroundNormal);
         display: flex;
+        width: 100%;
         flex-direction: column;
-        align-items: baseline;
+        padding: var(--spacingSmall);
+        border: 1px solid var(--borderNormal);
+        border-radius: var(--borderRadius);
+        box-sizing: border-box;
       }
 
-      :is(.texty) button {
+      #selectInput.open {
+        border-radius: var(--borderRadius) var(--borderRadius) 0 0;
+      }
+
+      .inputWrapper {
+        display: flex;
+        width: inherit;
+      }
+
+      button {
         border: none;
-        background: transparent;
-        text-decoration: var(--textDecoration);
-        border-bottom: var(--textBorderBottomShorthand);
+        background: none;
+        color: var(--textNormal);
       }
-
-      :is(.texty) label,
-      :is(.texty) input {
-        margin-right: 10px
+      button:before {
+        content: var(--buttonIconCode);
+        font-family: "Font Awesome 5 Free";
+        font-weight: bold;
+        font-size: 13px;
+        color: var(--textNormal);
       }
-
-      :is(.texty) input {
-        border:none;
-        background: transparent;
-      }
-
-      :is(.boxy) .inputWrapper {
-        display:flex;
-        align-items: stretch;
-        border-radius: var(--borderRadiusShorthand);
-        border: var(--borderShorthand);
-        padding: var(--paddingShorthand);
-        gap: 5px;
-        background: var(--inputBackground);
-        margin: var(--marginShorthand);
-      }
-
-      :is(.boxy) .inputWrapper:focus,
-      :is(.boxy) .inputWrapper:hover {
-        outline: var(--outlineShorthand);
-      }
-
-      :is(.boxy) input {
-        flex: 1;
-        border: none;
-        padding: var(--paddingShorthand);
-        background: transparent;
-      }
-
-      :is(.boxy) input:focus {
-        outline: none;
-      }
-
-      :is(.boxy) button {
-        border-radius: var(--borderRadiusShorthand);
-        border: 0;
-        padding: var(--paddingShorthand);
-      }
-
       button:hover,
       button:focus {
         cursor: pointer;
       }
 
-      input, #textInput {
+      #textInput {
         font-size: var(--inputFontSize);
+        background: inherit;
+        color: var(--textNormal);
+        outline: none;
+        border: none;
+        flex: 1;
+        line-height: 27px;
       }
 
       .optionsWrapper {
-        background: white;
-        border: 1px solid black;
+        background: var(--backgroundNormal);
         position: absolute;
-        margin-top: 20px;
-        max-height: 200px;
-        overflow-y: auto;
-        z-index; 1;
+        max-height: 135px;
+        overflow: auto;
+        display: flex;
+        margin-top: calc(var(--spacingSmall) * 2 + 27px - 4px);
+        width: calc(100% - 2px - 14px);
+        z-index: 9999;
+        padding: 5px 0;
+        box-sizing: border-box;
+        margin-left: -6px;
+        border-radius: 0 0 var(--borderRadius) var(--borderRadius);
+        border: 1px solid var(--borderNormal);
+        border-top: 1px solid var(--borderNormal);
       }
 
       label {
@@ -111,31 +89,46 @@ autoCompleteSelectTemplate.innerHTML = `
         list-style: none;
         padding: 0;
         margin: 0;
+        width: 100%;
       }
 
       li {
         cursor: pointer;
+        color: var(--textNormal);
+        display: flex;
+        gap: 5px;
+        align-items: center;
+        width: calc(100% - 10px);
+        padding: 5px;
       }
+
+      li>img {
+        border-radius: 50%;
+      }
+
       li:hover {
-        background-color: pink;
+        background-color: var(--optionHover);
       }
 
       .errorMessage {
-        color: var(--errorColour);
+        color: var(--textError);
       }
 
       .isHidden {
         display: none;
       }
     </style>
-    <div id='selectInput' class='texty'>
+
+    <div id='selectInput' class='boxy'>
       <label>
         <slot name="input-label"></slot>
       </label>
+
       <div class='inputWrapper'>
         <input id='textInput' value type='text' />
-        <button class='addOption'>+</button>
+        <button class='addOption'></button>
       </div>
+
       <span class='errorMessage isHidden'></span>
       <div class='optionsWrapper isHidden'></div>
     </div>
@@ -181,6 +174,9 @@ class AutoCompleteSelect extends HTMLElement {
         this.$optionsWrapper.classList[this.$inputWrapper.contains(this.shadowRoot.activeElement) ? 'remove' : 'add'](
           'isHidden',
         );
+        this.$wrapper.classList[this.$inputWrapper.contains(this.shadowRoot.activeElement) ? 'add' : 'remove'](
+          'open',
+        );
       };
     }
 
@@ -211,10 +207,12 @@ class AutoCompleteSelect extends HTMLElement {
         const img = document.createElement('img')
         const span = document.createElement('span');
         const li = document.createElement('li')
-        img.setAttribute("src",option.avatarUrl);
-        img.setAttribute("width", 20);
+        if(option.avatarUrl) {
+          img.setAttribute("src",option.avatarUrl);
+          img.setAttribute("width", 20);
+          li.appendChild(img);
+        }
         span.innerText = option.name;
-        li.appendChild(img)
         li.appendChild(span);
         li.classList.add("listItem");
         li.addEventListener("click", (e) => {
