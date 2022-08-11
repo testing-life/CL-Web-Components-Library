@@ -42,13 +42,7 @@ autoCompleteSelectTemplate.innerHTML = `
         background: none;
         color: var(--textNormal);
       }
-      button:before {
-        content: var(--buttonIconCode);
-        font-family: "Font Awesome 5 Free";
-        font-weight: bold;
-        font-size: 13px;
-        color: var(--textNormal);
-      }
+ 
       button:hover,
       button:focus {
         cursor: pointer;
@@ -79,6 +73,7 @@ autoCompleteSelectTemplate.innerHTML = `
         border-radius: 0 0 var(--borderRadius) var(--borderRadius);
         border: 1px solid var(--borderNormal);
         border-top: 1px solid var(--borderNormal);
+        flex-direction: column;
       }
 
       label {
@@ -109,28 +104,42 @@ autoCompleteSelectTemplate.innerHTML = `
       li:hover {
         background-color: var(--optionHover);
       }
-
+      
+      .noResult {
+        display:flex
+      }
+      
       .errorMessage {
         color: var(--textError);
       }
 
       .isHidden {
-        display: none;
+        clip: rect(0 0 0 0); 
+        clip-path: inset(50%);
+        height: 1px;
+        overflow: hidden;
+        position: absolute;
+        white-space: nowrap; 
+        width: 1px;
       }
     </style>
 
-    <div id='selectInput' class='boxy'>
+    <div id='selectInput'>
       <label>
         <slot name="input-label"></slot>
       </label>
 
       <div class='inputWrapper'>
         <input id='textInput' value type='text' />
-        <button class='addOption'></button>
+        <button class='clear isHidden'>X</button>
       </div>
 
-      <span class='errorMessage isHidden'></span>
-      <div class='optionsWrapper isHidden'></div>
+      <div class='optionsWrapper isHidden'>
+        <div class='noResult'>
+          <p class='noResult__msg'>Add new DAO manually</p>
+          <button class='addOption'>+</button>
+        </div>
+      </div>
     </div>
 `;
 
@@ -141,31 +150,41 @@ class AutoCompleteSelect extends HTMLElement {
     this.shadowRoot.appendChild(autoCompleteSelectTemplate.content.cloneNode(true));
     this._options = [];
     this._filteredOptions = [];
-    this._tempQuery = '';
     this.$wrapper = this.shadowRoot.querySelector('#selectInput');
     this.$input = this.shadowRoot.querySelector('input');
     this.$inputWrapper = this.shadowRoot.querySelector('.inputWrapper');
     this.$optionsWrapper = this.shadowRoot.querySelector('.optionsWrapper');
     this.$addButton = this.shadowRoot.querySelector('.addOption');
+    this.$clearButton = this.shadowRoot.querySelector('.clear');
+    this.$noResultMsg = this.shadowRoot.querySelector('.noResult__msg');
   }
 
   static get observedAttributes() {
-    return ['error', 'options'];
+    return ['message', 'options'];
   }
 
   connectedCallback() {
+
+    if(this.$clearButton.isConnected) {
+      this.$clearButton.addEventListener('click', e => {
+        this.$input.value = '';
+        this.buildList(this._options);
+      });
+    }
+
     if (this.$addButton.isConnected) {
       this.$addButton.addEventListener('click', e => {
-        const newItem = { name: this._tempQuery, avatarUrl: "", treasuryAddresses: [], id: Date.now().toString() };
+        const newItem = { name: this.$input.value, avatarUrl: "", treasuryAddresses: [], id: Date.now().toString() };
         if (newItem && (this._options.filter(option => option.name === newItem)).length === 0) {
           this._options.push(newItem);
           this.buildList(this._options);
           this.dispatchEvent(new CustomEvent('newDaoAdded', { detail: { newDao: newItem } }));
           this.dispatchEvent(new CustomEvent('daoSelectionChanged', { detail: { ...newItem } }));
-          this._tempQuery = '';
-          this.$input.value = '';
         }
         this.$addButton.blur();
+        if (this.$clearButton.classList.contains('isHidden')){
+          this.$clearButton.classList.remove('isHidden');
+        }
       });
     }
 
@@ -185,12 +204,7 @@ class AutoCompleteSelect extends HTMLElement {
         const filteredList = e.target.value
           ? this._options.filter(option => option.name.toLowerCase().includes(e.target.value.toLowerCase()))
           : this._options;
-          if(!filteredList.length) {
-            this._tempQuery = e.target.value
-            this.$input.value = `No DAO found, add ‘${e.target.value}’ manually`;
-          }
         this.buildList(filteredList);
-        // this.$input.value = `No DAO found, add ‘${e.target.value}’ manually`;
       });
     }
   }
@@ -201,6 +215,20 @@ class AutoCompleteSelect extends HTMLElement {
       existingList.remove();
     }
     const ul = document.createElement('ul');
+    ul.addEventListener('click', e => {
+      if(!e.target.dataset.daoId) {
+        return;
+      }
+      const result = this._options.find(item => item.name === e.target.innerText);
+      if(result){
+        this.$input.value = e.target.innerText;
+        this.dispatchEvent(new CustomEvent('daoSelectionChanged', { detail: { ...result } }));
+        if (this.$clearButton.classList.contains('isHidden')){
+          this.$clearButton.classList.remove('isHidden');
+        }
+      }
+    })
+    
     const listFragment = document.createDocumentFragment();
     data.forEach(option => {
       try {
@@ -215,17 +243,14 @@ class AutoCompleteSelect extends HTMLElement {
         span.innerText = option.name;
         li.appendChild(span);
         li.classList.add("listItem");
-        li.addEventListener("click", (e) => {
-          this.$input.value = e.target.innerText;
-          this.dispatchEvent(new CustomEvent('daoSelectionChanged', { detail: { ...option } }));
-        });
+        li.setAttribute('data-dao-id', option.id);
         listFragment.appendChild(li);
       } catch (error) {
         console.error(error);
       }
     });
     ul.append(listFragment);
-    this.$optionsWrapper.append(ul);
+    this.$optionsWrapper.insertAdjacentElement('beforeend', ul);
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
