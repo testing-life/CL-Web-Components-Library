@@ -182,6 +182,9 @@ class AutoCompleteSelect extends HTMLElement {
           this.dispatchEvent(new CustomEvent('daoSelectionChanged', { detail: { ...newItem } }));
         }
         this.$addButton.blur();
+        if (this.$clearButton.classList.contains('isHidden')){
+          this.$clearButton.classList.remove('isHidden');
+        }
       });
     }
 
@@ -202,9 +205,6 @@ class AutoCompleteSelect extends HTMLElement {
           ? this._options.filter(option => option.name.toLowerCase().includes(e.target.value.toLowerCase()))
           : this._options;
         this.buildList(filteredList);
-        if (this.$clearButton.isConnected && this.$clearButton.classList.contains('isHidden') && e.target.value){
-          this.$clearButton.classList.remove('isHidden');
-        }
       });
     }
   }
@@ -232,6 +232,9 @@ class AutoCompleteSelect extends HTMLElement {
         li.addEventListener("click", (e) => {
           this.$input.value = e.target.innerText;
           this.dispatchEvent(new CustomEvent('daoSelectionChanged', { detail: { ...option } }));
+          if (this.$clearButton.classList.contains('isHidden')){
+            this.$clearButton.classList.remove('isHidden');
+          }
         });
         listFragment.appendChild(li);
       } catch (error) {
