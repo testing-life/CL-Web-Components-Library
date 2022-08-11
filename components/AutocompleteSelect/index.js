@@ -174,7 +174,7 @@ class AutoCompleteSelect extends HTMLElement {
 
     if (this.$addButton.isConnected) {
       this.$addButton.addEventListener('click', e => {
-        const newItem = { name: this._tempQuery, avatarUrl: "", treasuryAddresses: [], id: Date.now().toString() };
+        const newItem = { name: this.$input.value, avatarUrl: "", treasuryAddresses: [], id: Date.now().toString() };
         if (newItem && (this._options.filter(option => option.name === newItem)).length === 0) {
           this._options.push(newItem);
           this.buildList(this._options);
@@ -215,6 +215,20 @@ class AutoCompleteSelect extends HTMLElement {
       existingList.remove();
     }
     const ul = document.createElement('ul');
+    ul.addEventListener('click', e => {
+      if(!e.target.dataset.daoId) {
+        return;
+      }
+      const result = this._options.find(item => item.name === e.target.innerText);
+      if(result){
+        this.$input.value = e.target.innerText;
+        this.dispatchEvent(new CustomEvent('daoSelectionChanged', { detail: { ...result } }));
+        if (this.$clearButton.classList.contains('isHidden')){
+          this.$clearButton.classList.remove('isHidden');
+        }
+      }
+    })
+    
     const listFragment = document.createDocumentFragment();
     data.forEach(option => {
       try {
@@ -229,13 +243,7 @@ class AutoCompleteSelect extends HTMLElement {
         span.innerText = option.name;
         li.appendChild(span);
         li.classList.add("listItem");
-        li.addEventListener("click", (e) => {
-          this.$input.value = e.target.innerText;
-          this.dispatchEvent(new CustomEvent('daoSelectionChanged', { detail: { ...option } }));
-          if (this.$clearButton.classList.contains('isHidden')){
-            this.$clearButton.classList.remove('isHidden');
-          }
-        });
+        li.setAttribute('data-dao-id', option.id);
         listFragment.appendChild(li);
       } catch (error) {
         console.error(error);
