@@ -147,6 +147,7 @@ class AutoCompleteSelect extends HTMLElement {
     this.shadowRoot.appendChild(autoCompleteSelectTemplate.content.cloneNode(true));
     this._options = [];
     this._filteredOptions = [];
+    this._tempQuery = '';
     this.$wrapper = this.shadowRoot.querySelector('#selectInput');
     this.$input = this.shadowRoot.querySelector('input');
     this.$inputWrapper = this.shadowRoot.querySelector('.inputWrapper');
@@ -161,12 +162,14 @@ class AutoCompleteSelect extends HTMLElement {
   connectedCallback() {
     if (this.$addButton.isConnected) {
       this.$addButton.addEventListener('click', e => {
-        const newItem = { name: this.$input.value, avatarUrl: "", treasuryAddresses: [], id: Date.now().toString() };
+        const newItem = { name: this._tempQuery, avatarUrl: "", treasuryAddresses: [], id: Date.now().toString() };
         if (newItem && (this._options.filter(option => option.name === newItem)).length === 0) {
           this._options.push(newItem);
           this.buildList(this._options);
           this.dispatchEvent(new CustomEvent('newDaoAdded', { detail: { newDao: newItem } }));
           this.dispatchEvent(new CustomEvent('daoSelectionChanged', { detail: { ...newItem } }));
+          this._tempQuery = '';
+          this.$input.value = '';
         }
         this.$addButton.blur();
       });
@@ -185,8 +188,12 @@ class AutoCompleteSelect extends HTMLElement {
         const filteredList = e.target.value
           ? this._options.filter(option => option.name.toLowerCase().includes(e.target.value.toLowerCase()))
           : this._options;
+          if(!filteredList.length) {
+            this._tempQuery = e.target.value
+            this.$input.value = `No DAO found, add ‘${e.target.value}’ manually`;
+          }
         this.buildList(filteredList);
-
+        // this.$input.value = `No DAO found, add ‘${e.target.value}’ manually`;
       });
     }
   }
@@ -223,7 +230,7 @@ class AutoCompleteSelect extends HTMLElement {
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    if (name === 'options') {
+    if (name === 'options' && newValue) {
       this._options = JSON.parse(newValue);
       this.buildList(JSON.parse(newValue));
     }
