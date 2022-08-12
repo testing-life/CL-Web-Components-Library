@@ -101,6 +101,7 @@ autoCompleteSelectTemplate.innerHTML = `
         border-radius: 50%;
       }
 
+      li:hover, li:focus {
       .listItem:hover {
         background-color: var(--optionHover);
       }
@@ -164,6 +165,7 @@ class AutoCompleteSelect extends HTMLElement {
     this.$addButton = this.shadowRoot.querySelector('.addOption');
     this.$clearButton = this.shadowRoot.querySelector('.clear');
     this.$noResultMsg = this.shadowRoot.querySelector('.noResult__msg');
+    this.elemIndex = 0;
   }
 
   static get observedAttributes() {
@@ -194,6 +196,39 @@ class AutoCompleteSelect extends HTMLElement {
           this.$clearButton.classList.remove('isHidden');
         }
       });
+    }
+
+    if(this.$wrapper.isConnected){
+      this.shadowRoot.addEventListener('keydown', (event) => {
+        var name = event.key;
+        var code = event.code;
+        if (name === 'Control') {
+          // Do nothing.
+          return;
+        }
+        const elem = this.shadowRoot.querySelector('ul').children.item(this.elemIndex);
+        
+        switch (code) {
+          case 'ArrowDown':
+            elem.firstElementChild.focus();
+            console.log('elem', elem, this.elemIndex)
+            this.elemIndex++;
+            break;
+          case 'ArrowUp':
+            elem.firstElementChild.focus();
+            console.log('elem', elem, this.elemIndex)
+            this.elemIndex--;            
+          break;
+        
+          default:
+            break;
+        }
+        // if (event.ctrlKey) {
+        //   alert(`Combination of ctrlKey + ${name} \n Key code Value: ${code}`);
+        // } else {
+        //   alert(`Key pressed ${name} \n Key code Value: ${code}`);
+        // }
+      }, false);
     }
 
     if (this.$inputWrapper.isConnected) {
@@ -247,20 +282,22 @@ class AutoCompleteSelect extends HTMLElement {
     })
 
     const listFragment = document.createDocumentFragment();
-    data.forEach(option => {
+    data.forEach((option,index) => {
       try {
         const img = document.createElement('img')
         const span = document.createElement('span');
         const li = document.createElement('li')
+        const button = document.createElement('button')
         if(option.avatarUrl) {
           img.setAttribute("src",option.avatarUrl);
           img.setAttribute("width", 20);
-          li.appendChild(img);
+          button.appendChild(img);
         }
         span.innerText = option.name;
-        li.appendChild(span);
+        button.appendChild(span);
         li.classList.add("listItem");
         li.setAttribute('data-dao-id', option.id);
+        li.append(button);
         listFragment.appendChild(li);
       } catch (error) {
         console.error(error);
