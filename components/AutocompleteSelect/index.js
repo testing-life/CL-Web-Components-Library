@@ -11,8 +11,12 @@ autoCompleteSelectTemplate.innerHTML = `
         --optionHover: pink;
         --textNormal: black;
         --textError: red;
+        --textWarning: orange;
         --maxScrollerHeight: 135px;
         --inputboxHeight: 46px;
+        --avatarSize: 32px;
+        --placeholderText: Select your DAO...;
+        --noResultText: No DAO found, add '%DAO%' manually;
       }
 
       #selectInput {
@@ -63,7 +67,9 @@ autoCompleteSelectTemplate.innerHTML = `
 
       .optionsWrapper {
         position: absolute;
+        overflow-x: hidden;
         overflow-y: auto;
+        text-overflow: ellipsis;
         background: var(--backgroundNormal);
         max-height: var(--maxScrollerHeight);
         z-index: 1;
@@ -102,6 +108,8 @@ autoCompleteSelectTemplate.innerHTML = `
 
       .listItem>button>img {
         border-radius: 50%;
+        width: var(--avatarSize);
+        height: var(--avatarSize);
       }
 
       .listItem:focus,
@@ -111,11 +119,12 @@ autoCompleteSelectTemplate.innerHTML = `
 
       .noResult>button>span {
         display:flex;
-        color: var(--textError);
+        color: var(--textWarning);
       }
 
       .noResult>button>slot {
-        font-size: 20px;
+        color: var(--textWarning);
+        font-size: var(--avatarSize);
         padding: 0;
       }
 
@@ -145,10 +154,10 @@ autoCompleteSelectTemplate.innerHTML = `
       </div>
 
       <div class='optionsWrapper isHidden'>
-        <div class='noResult addOption listItem'>
+        <div class='noResult addOption listItem isHidden'>
           <button class='addOption__btn'>
             <slot name="button-icon-add">+</slot>
-            <span class='noResult__msg'>Add new DAO manually</span>
+            <span class='noResult__msg'></span>
           </button>
         </div>
       </div>
@@ -163,6 +172,7 @@ class AutoCompleteSelect extends HTMLElement {
     this._options = [];
     this._filteredOptions = [];
     this.$wrapper = this.shadowRoot.querySelector('#selectInput');
+    this.$styles = this.shadowRoot.styleSheets[0].cssRules.item(':host');
     this.$input = this.shadowRoot.querySelector('input');
     this.$inputWrapper = this.shadowRoot.querySelector('.inputWrapper');
     this.$optionsWrapper = this.shadowRoot.querySelector('.optionsWrapper');
@@ -179,21 +189,6 @@ class AutoCompleteSelect extends HTMLElement {
   clampNumber(num,min,max) {
     return Math.min(Math.max(num,min),max)
   }
-
-addDaoHandler(input){
-  const newItem = { name: input.value, avatarUrl: "", treasuryAddresses: [], id: Date.now().toString() };
-  if (newItem.name && (this._options.filter(option => option.name === newItem.name)).length === 0) {
-    this._options.push(newItem);
-    this.buildList(this._options);
-    this.dispatchEvent(new CustomEvent('newDaoAdded', { detail: { newDao: newItem } }));
-    this.dispatchEvent(new CustomEvent('daoSelectionChanged', { detail: { ...newItem } }));
-  }
-  this.$addButton.blur();
-  if (this.$clearButton.classList.contains('isHidden')){
-    this.$clearButton.classList.remove('isHidden');
-  }
-
-}
 
   connectedCallback() {
 
@@ -253,13 +248,20 @@ addDaoHandler(input){
     }
 
     if (this.$input.isConnected) {
+      const placeHolderText = this.$styles.style.getPropertyValue('--placeholderText').trim();
+      const noResultText = this.$styles.style.getPropertyValue('--noResultText').replace('%DAO%', this.$input.value).trim();
+
+      this.$input.placeholder = placeHolderText;
       this.$input.addEventListener('input', e => {
+        this.$optionsWrapper.classList.remove('isHidden');
+        this.$wrapper.classList.add('open');
         const filteredList = e.target.value
           ? this._options.filter(option => option.name.toLowerCase().includes(e.target.value.toLowerCase()))
           : this._options;
         if (!e.target.value.trim() || (this._options.filter(option => option.name.toLowerCase() === e.target.value.toLowerCase().trim())).length === 1) {
           this.$addButton.classList.add("isHidden");
         } else {
+          this.$noResultMsg.innerHTML = noResultText;
           this.$addButton.classList.remove("isHidden");
         }
         this.buildList(filteredList);
@@ -279,6 +281,9 @@ addDaoHandler(input){
     if (newItem.name && (this._options.filter(option => option.name === newItem.name)).length === 0) {
       this._options.push(newItem);
       this.buildList(this._options);
+      this.$addButton.classList.add('isHidden');
+      this.$optionsWrapper.classList.add('isHidden');
+      this.$wrapper.classList.remove('open');
       this.dispatchEvent(new CustomEvent('newDaoAdded', { detail: { newDao: newItem } }));
       this.dispatchEvent(new CustomEvent('daoSelectionChanged', { detail: { ...newItem } }));
     }
