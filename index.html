@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <script type="module">
-  import { Services, MaxInput, TrimAddress, EnsLookup, AutoCompleteSelect } from './index.js';
+        import { Services, MaxInput, TrimAddress, EnsLookup, AutoCompleteSelect } from './index.js'
   // import { ethers } from 'https://cdn.ethers.io/lib/ethers-5.2.esm.min.js';
   window.services = Services;
   // window.ethers = ethers;
@@ -100,21 +100,21 @@
       const ensInput = document.querySelector( 'ens-lookup' )
       ensInput.addEventListener( 'ensLookupChanged', async e => {
         if ( e.detail === '' ) {
-          ensInput.setAttribute( 'result', '' )
+          ensInput.setAttribute( 'result', '' );
           return
         }
-      ensInput.setAttribute( 'result', 'loading...' )
-      const provider = ethers.providers.getDefaultProvider();
-      if ( provider ) {
-// 0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41
-// ricmoo.eth
-      const resolver = async name => await provider.getResolver( name )
-      const res = await resolver( e.detail ).catch( e => ensInput.setAttribute( 'error', e ) )
-      if ( ensInput && res ) {
-        ensInput.setAttribute( 'result', res.name )
-      }
-    }
-    } );
+        ensInput.setAttribute( 'result', 'loading...' )
+        const provider = ethers.providers.getDefaultProvider()
+        if ( provider ) {
+          // 0x4976fb03C32e5B8cfe2b6cCB31c09Ba78EBaBa41
+          // ricmoo.eth
+          const resolver = async name => await provider.getResolver( name )
+          const res = await resolver( e.detail ).catch( e => ensInput.setAttribute( 'error', e ) )
+          if ( ensInput && res ) {
+            ensInput.setAttribute( 'result', res.name )
+          }
+        }
+      } );
 
       const ensInput2 = document.querySelector( '#ensLookup' )
       ensInput2.addEventListener( 'ensLookupChanged', async e => {
@@ -193,13 +193,11 @@
         }
       }
 
-  arr = Object.keys( dataObj ).map( item => {
-    return { ...dataObj[ item ], id: item }
-  } )
+        arr = Object.keys( dataObj ).map( item => {
+          return { ...dataObj[ item ], id: item }
+        } )
 
-      const data = JSON.stringify( arr )
-    // '[{"name":"We Are Dorkis","avatarUrl":"https://deepdao-uploads.s3.us-east-2.amazonaws.com/assets/snapshots/spaces/wearedorkis.eth.png","treasuryAddresses":["wearedorkis.eth"], "id": "d595933e-9fa6-4ae0-a12f-4f0ffda7126b"},{"name":"Unity Project","avatarUrl":null,"treasuryAddresses":["unityproject.eth"], "id": "d9c9fae9-049f-4123-805b-37bbb7b3c931"},{"name":"Good Karma Records","avatarUrl":null,"treasuryAddresses":["goodkarmarecords.eth"], "id": "cf96cfd6-1645-43b7-b1d0-467eb49ede51"}]';
-    // '{"d595933e-9fa6-4ae0-a12f-4f0ffda7126b":{"name":"We Are Dorkis","avatarUrl":"https://deepdao-uploads.s3.us-east-2.amazonaws.com/assets/snapshots/spaces/wearedorkis.eth.png","treasuryAddresses":["wearedorkis.eth"]},"d9c9fae9-049f-4123-805b-37bbb7b3c931":{"name":"Unity Project","avatarUrl":null,"treasuryAddresses":["unityproject.eth"]},"cf96cfd6-1645-43b7-b1d0-467eb49ede51":{"name":"Good Karma Records","avatarUrl":null,"treasuryAddresses":["goodkarmarecords.eth"]}}';
+        const data = JSON.stringify( arr )
 
       select.setAttribute( 'options', data );
 

@@ -87,7 +87,7 @@ autoCompleteSelectTemplate.innerHTML = `
         width: 100%;
       }
 
-      .listItem {
+      .listItem>button {
         cursor: pointer;
         color: var(--textNormal);
         display: flex;
@@ -97,21 +97,20 @@ autoCompleteSelectTemplate.innerHTML = `
         padding: 5px;
       }
 
-      .listItem>img {
+      .listItem>button>img {
         border-radius: 50%;
       }
 
-      li:hover, li:focus {
+      .listItem:focus,
       .listItem:hover {
         background-color: var(--optionHover);
       }
 
-      .noResult {
-        display:flex;
+      .noResult>button>span {
         color: var(--textError);
       }
 
-      .noResult>button {
+      .noResult>button>slot {
         font-size: 20px;
         padding: 0;
       }
@@ -144,8 +143,10 @@ autoCompleteSelectTemplate.innerHTML = `
 
       <div class='optionsWrapper isHidden'>
         <div class='noResult addOption listItem'>
-          <button class='addOption__btn'><slot name="button-icon-add">+</slot></button>
-          <span class='noResult__msg'>Add new DAO manually</span>
+          <button class='addOption__btn'>
+            <slot name="button-icon-add">+</slot>
+            <span class='noResult__msg'>Add new DAO manually</span>
+          </button>
         </div>
       </div>
     </div>
@@ -215,7 +216,7 @@ addDaoHandler(input){
         }
         let elem = null;
         const children = this.shadowRoot.querySelector('ul').children;
-        
+
         switch (code) {
           case 'ArrowDown':
               elem = children.item(this.elemIndex);
@@ -230,7 +231,7 @@ addDaoHandler(input){
               elem.firstElementChild.focus();
               this.elemIndex = this.clampNumber(this.elemIndex-1, 0,children.length-1);
           break;
-        
+
           default:
             break;
         }
@@ -269,20 +270,20 @@ addDaoHandler(input){
       });
     }
   }
- 
-addDaoHandler(){
-  const newItem = { name: this.$input.value, avatarUrl: "", treasuryAddresses: [], id: Date.now().toString() };
-        if (newItem.name && (this._options.filter(option => option.name === newItem.name)).length === 0) {
-          this._options.push(newItem);
-          this.buildList(this._options);
-          this.dispatchEvent(new CustomEvent('newDaoAdded', { detail: { newDao: newItem } }));
-          this.dispatchEvent(new CustomEvent('daoSelectionChanged', { detail: { ...newItem } }));
-        }
-        this.$addButton.blur();
-        if (this.$clearButton.classList.contains('isHidden')){
-          this.$clearButton.classList.remove('isHidden');
-        }
-}
+
+  addDaoHandler(){
+    const newItem = { name: this.$input.value, avatarUrl: "", treasuryAddresses: [], id: Date.now().toString() };
+    if (newItem.name && (this._options.filter(option => option.name === newItem.name)).length === 0) {
+      this._options.push(newItem);
+      this.buildList(this._options);
+      this.dispatchEvent(new CustomEvent('newDaoAdded', { detail: { newDao: newItem } }));
+      this.dispatchEvent(new CustomEvent('daoSelectionChanged', { detail: { ...newItem } }));
+    }
+    this.$addButton.blur();
+    if (this.$clearButton.classList.contains('isHidden')){
+      this.$clearButton.classList.remove('isHidden');
+    }
+  }
 
   buildList(data) {
     const existingList = this.shadowRoot.querySelector('.optionsWrapper ul');
@@ -309,7 +310,7 @@ addDaoHandler(){
     })
 
     const listFragment = document.createDocumentFragment();
-    data.forEach((option,index) => {
+    data.forEach((option, index) => {
       try {
         const img = document.createElement('img')
         const span = document.createElement('span');
