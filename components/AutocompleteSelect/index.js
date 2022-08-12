@@ -87,7 +87,7 @@ autoCompleteSelectTemplate.innerHTML = `
         width: 100%;
       }
 
-      li {
+      .listItem {
         cursor: pointer;
         color: var(--textNormal);
         display: flex;
@@ -97,18 +97,24 @@ autoCompleteSelectTemplate.innerHTML = `
         padding: 5px;
       }
 
-      li>img {
+      .listItem>img {
         border-radius: 50%;
       }
 
-      li:hover {
+      .listItem:hover {
         background-color: var(--optionHover);
       }
-      
+
       .noResult {
-        display:flex
+        display:flex;
+        color: var(--textError);
       }
-      
+
+      .noResult>button {
+        font-size: 20px;
+        padding: 0;
+      }
+
       .errorMessage {
         color: var(--textError);
       }
@@ -131,13 +137,14 @@ autoCompleteSelectTemplate.innerHTML = `
 
       <div class='inputWrapper'>
         <input id='textInput' value type='text' />
-        <button class='clear isHidden'>X</button>
+        <button class='clear isHidden'><slot name="button-icon-close">X</slot></button>
+        <button><slot name="button-icon-regular">></slot></button>
       </div>
 
       <div class='optionsWrapper isHidden'>
-        <div class='noResult'>
-          <p class='noResult__msg'>Add new DAO manually</p>
-          <button class='addOption'>+</button>
+        <div class='noResult addOption listItem'>
+          <button class='addOption__btn'><slot name="button-icon-add">+</slot></button>
+          <span class='noResult__msg'>Add new DAO manually</span>
         </div>
       </div>
     </div>
@@ -168,6 +175,7 @@ class AutoCompleteSelect extends HTMLElement {
     if(this.$clearButton.isConnected) {
       this.$clearButton.addEventListener('click', e => {
         this.$input.value = '';
+        this.$clearButton.classList.add('isHidden');
         this.buildList(this._options);
       });
     }
@@ -175,7 +183,7 @@ class AutoCompleteSelect extends HTMLElement {
     if (this.$addButton.isConnected) {
       this.$addButton.addEventListener('click', e => {
         const newItem = { name: this.$input.value, avatarUrl: "", treasuryAddresses: [], id: Date.now().toString() };
-        if (newItem && (this._options.filter(option => option.name === newItem)).length === 0) {
+        if (newItem.name && (this._options.filter(option => option.name === newItem.name)).length === 0) {
           this._options.push(newItem);
           this.buildList(this._options);
           this.dispatchEvent(new CustomEvent('newDaoAdded', { detail: { newDao: newItem } }));
@@ -204,6 +212,11 @@ class AutoCompleteSelect extends HTMLElement {
         const filteredList = e.target.value
           ? this._options.filter(option => option.name.toLowerCase().includes(e.target.value.toLowerCase()))
           : this._options;
+        if (!e.target.value.trim() || (this._options.filter(option => option.name.toLowerCase() === e.target.value.toLowerCase().trim())).length === 1) {
+          this.$addButton.classList.add("isHidden");
+        } else {
+          this.$addButton.classList.remove("isHidden");
+        }
         this.buildList(filteredList);
       });
     }
@@ -215,8 +228,11 @@ class AutoCompleteSelect extends HTMLElement {
       existingList.remove();
     }
     const ul = document.createElement('ul');
+    this.$input.addEventListener('input', e => {
+      this.$clearButton.classList[e.target.value.length > 0 ?"remove":"add"]("isHidden");
+    });
     ul.addEventListener('click', e => {
-    const id = e.target.dataset.daoId || e.target.closest('li').dataset.daoId
+      const id = e.target.dataset.daoId || e.target.closest('li').dataset.daoId;
       if(!id) {
         return;
       }
@@ -229,7 +245,7 @@ class AutoCompleteSelect extends HTMLElement {
         }
       }
     })
-    
+
     const listFragment = document.createDocumentFragment();
     data.forEach(option => {
       try {
