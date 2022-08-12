@@ -11,30 +11,33 @@ autoCompleteSelectTemplate.innerHTML = `
         --optionHover: pink;
         --textNormal: black;
         --textError: red;
-        --buttonIconCode: "\\F002";
-      } 
+        --maxScrollerHeight: 135px;
+        --inputboxHeight: 46px;
+      }
 
       #selectInput {
         font-size: inherit;
         font-family: inherit;
         color:inherit;
         background: var(--backgroundNormal);
-        display: flex;
+        position: relative;
         width: 100%;
-        flex-direction: column;
-        padding: var(--spacingSmall);
+        height: 100%;
         border: 1px solid var(--borderNormal);
         border-radius: var(--borderRadius);
         box-sizing: border-box;
       }
 
       #selectInput.open {
+        border-color: var(--borderHighlight);
         border-radius: var(--borderRadius) var(--borderRadius) 0 0;
       }
 
       .inputWrapper {
         display: flex;
+        align-items: center;
         width: inherit;
+        height: inherit;
       }
 
       button {
@@ -42,7 +45,7 @@ autoCompleteSelectTemplate.innerHTML = `
         background: none;
         color: var(--textNormal);
       }
- 
+
       button:hover,
       button:focus {
         cursor: pointer;
@@ -55,25 +58,25 @@ autoCompleteSelectTemplate.innerHTML = `
         outline: none;
         border: none;
         flex: 1;
-        line-height: 27px;
+        padding: var(--spacingNormal);
       }
 
       .optionsWrapper {
-        background: var(--backgroundNormal);
         position: absolute;
-        max-height: 135px;
-        overflow: auto;
-        display: flex;
-        margin-top: calc(var(--spacingSmall) * 2 + 27px - 4px);
-        width: calc(100% - 2px - 14px);
-        z-index: 9999;
+        overflow-y: auto;
+        background: var(--backgroundNormal);
+        max-height: var(--maxScrollerHeight);
+        z-index: 1;
+        width: inherit;
         padding: 5px 0;
-        box-sizing: border-box;
-        margin-left: -6px;
         border-radius: 0 0 var(--borderRadius) var(--borderRadius);
-        border: 1px solid var(--borderNormal);
+        border: 1px solid var(--borderHighlight);
         border-top: 1px solid var(--borderNormal);
-        flex-direction: column;
+        margin-left: -1px;
+        transform-origin: center top;
+        transition: transform 0.2s, opacity 0.2s;
+        transform: scaleY(1);
+        opacity: 1;
       }
 
       label {
@@ -91,10 +94,10 @@ autoCompleteSelectTemplate.innerHTML = `
         cursor: pointer;
         color: var(--textNormal);
         display: flex;
-        gap: 5px;
+        gap: var(--spacingSmall);
         align-items: center;
-        width: calc(100% - 10px);
-        padding: 5px;
+        width: calc(100% - var(--spacingSmall) * 2);
+        padding: var(--spacingSmall);
       }
 
       .listItem>button>img {
@@ -107,6 +110,7 @@ autoCompleteSelectTemplate.innerHTML = `
       }
 
       .noResult>button>span {
+        display:flex;
         color: var(--textError);
       }
 
@@ -120,13 +124,12 @@ autoCompleteSelectTemplate.innerHTML = `
       }
 
       .isHidden {
-        clip: rect(0 0 0 0); 
-        clip-path: inset(50%);
-        height: 1px;
+        opacity: 0;
+        transform: scaleY(0);
+        transition: transform 0.2s, opacity 0.2s;
         overflow: hidden;
         position: absolute;
         white-space: nowrap; 
-        width: 1px;
       }
     </style>
 
