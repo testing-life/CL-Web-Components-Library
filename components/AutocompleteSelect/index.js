@@ -172,7 +172,6 @@ class AutoCompleteSelect extends HTMLElement {
     this._options = [];
     this._filteredOptions = [];
     this.$wrapper = this.shadowRoot.querySelector('#selectInput');
-    this.$styles = this.shadowRoot.styleSheets[0].cssRules.item(':host');
     this.$input = this.shadowRoot.querySelector('input');
     this.$inputWrapper = this.shadowRoot.querySelector('.inputWrapper');
     this.$optionsWrapper = this.shadowRoot.querySelector('.optionsWrapper');
@@ -248,11 +247,12 @@ class AutoCompleteSelect extends HTMLElement {
     }
 
     if (this.$input.isConnected) {
-      const placeHolderText = this.$styles.style.getPropertyValue('--placeholderText').trim();
-      const noResultText = this.$styles.style.getPropertyValue('--noResultText').replace('%DAO%', this.$input.value).trim();
+      const styles = this.shadowRoot.styleSheets[0].cssRules.item(':host');
+      const placeHolderText = styles.style.getPropertyValue('--placeholderText').trim();
 
       this.$input.placeholder = placeHolderText;
       this.$input.addEventListener('input', e => {
+        const noResultText = styles.style.getPropertyValue('--noResultText').replace('%DAO%', this.$input.value).trim();
         this.$optionsWrapper.classList.remove('isHidden');
         this.$wrapper.classList.add('open');
         const filteredList = e.target.value
