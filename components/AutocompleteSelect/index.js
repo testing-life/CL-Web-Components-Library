@@ -212,6 +212,11 @@ class AutoCompleteSelect extends HTMLElement {
         const filteredList = e.target.value
           ? this._options.filter(option => option.name.toLowerCase().includes(e.target.value.toLowerCase()))
           : this._options;
+        if (!e.target.value.trim() || (this._options.filter(option => option.name.toLowerCase() === e.target.value.toLowerCase().trim())).length === 1) {
+          this.$addButton.classList.add("isHidden");
+        } else {
+          this.$addButton.classList.remove("isHidden");
+        }
         this.buildList(filteredList);
       });
     }
