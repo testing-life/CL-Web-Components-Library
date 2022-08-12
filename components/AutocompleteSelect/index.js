@@ -172,6 +172,25 @@ class AutoCompleteSelect extends HTMLElement {
     return ['message', 'options'];
   }
 
+  clampNumber(num,min,max) {
+    return Math.min(Math.max(num,min),max)
+  }
+
+addDaoHandler(input){
+  const newItem = { name: input.value, avatarUrl: "", treasuryAddresses: [], id: Date.now().toString() };
+  if (newItem.name && (this._options.filter(option => option.name === newItem.name)).length === 0) {
+    this._options.push(newItem);
+    this.buildList(this._options);
+    this.dispatchEvent(new CustomEvent('newDaoAdded', { detail: { newDao: newItem } }));
+    this.dispatchEvent(new CustomEvent('daoSelectionChanged', { detail: { ...newItem } }));
+  }
+  this.$addButton.blur();
+  if (this.$clearButton.classList.contains('isHidden')){
+    this.$clearButton.classList.remove('isHidden');
+  }
+
+}
+
   connectedCallback() {
 
     if(this.$clearButton.isConnected) {
@@ -183,51 +202,38 @@ class AutoCompleteSelect extends HTMLElement {
     }
 
     if (this.$addButton.isConnected) {
-      this.$addButton.addEventListener('click', e => {
-        const newItem = { name: this.$input.value, avatarUrl: "", treasuryAddresses: [], id: Date.now().toString() };
-        if (newItem.name && (this._options.filter(option => option.name === newItem.name)).length === 0) {
-          this._options.push(newItem);
-          this.buildList(this._options);
-          this.dispatchEvent(new CustomEvent('newDaoAdded', { detail: { newDao: newItem } }));
-          this.dispatchEvent(new CustomEvent('daoSelectionChanged', { detail: { ...newItem } }));
-        }
-        this.$addButton.blur();
-        if (this.$clearButton.classList.contains('isHidden')){
-          this.$clearButton.classList.remove('isHidden');
-        }
-      });
+      this.$addButton.addEventListener('click', () => this.addDaoHandler(this.$input));
     }
 
     if(this.$wrapper.isConnected){
       this.shadowRoot.addEventListener('keydown', (event) => {
-        var name = event.key;
-        var code = event.code;
+        const name = event.key;
+        const code = event.code;
         if (name === 'Control') {
           // Do nothing.
           return;
         }
-        const elem = this.shadowRoot.querySelector('ul').children.item(this.elemIndex);
+        let elem = null;
+        const children = this.shadowRoot.querySelector('ul').children;
         
         switch (code) {
           case 'ArrowDown':
-            elem.firstElementChild.focus();
-            console.log('elem', elem, this.elemIndex)
-            this.elemIndex++;
+              elem = children.item(this.elemIndex);
+              elem.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});
+              elem.firstElementChild.focus();
+
+              this.elemIndex = this.clampNumber(this.elemIndex+1, 0,children.length-1);            
             break;
           case 'ArrowUp':
-            elem.firstElementChild.focus();
-            console.log('elem', elem, this.elemIndex)
-            this.elemIndex--;            
+              elem = children.item(this.elemIndex);
+              elem.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});
+              elem.firstElementChild.focus();
+              this.elemIndex = this.clampNumber(this.elemIndex-1, 0,children.length-1);
           break;
         
           default:
             break;
         }
-        // if (event.ctrlKey) {
-        //   alert(`Combination of ctrlKey + ${name} \n Key code Value: ${code}`);
-        // } else {
-        //   alert(`Key pressed ${name} \n Key code Value: ${code}`);
-        // }
       }, false);
     }
 
@@ -254,9 +260,30 @@ class AutoCompleteSelect extends HTMLElement {
         }
         this.buildList(filteredList);
       });
+
+      this.$input.addEventListener('keydown', e => {
+        const code = e.code;
+        if(code === 'Enter'){
+          this.addDaoHandler(e.target)    
+        }
+      });
     }
   }
  
+addDaoHandler(){
+  const newItem = { name: this.$input.value, avatarUrl: "", treasuryAddresses: [], id: Date.now().toString() };
+        if (newItem.name && (this._options.filter(option => option.name === newItem.name)).length === 0) {
+          this._options.push(newItem);
+          this.buildList(this._options);
+          this.dispatchEvent(new CustomEvent('newDaoAdded', { detail: { newDao: newItem } }));
+          this.dispatchEvent(new CustomEvent('daoSelectionChanged', { detail: { ...newItem } }));
+        }
+        this.$addButton.blur();
+        if (this.$clearButton.classList.contains('isHidden')){
+          this.$clearButton.classList.remove('isHidden');
+        }
+}
+
   buildList(data) {
     const existingList = this.shadowRoot.querySelector('.optionsWrapper ul');
     if (existingList) {
