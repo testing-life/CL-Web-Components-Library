@@ -185,13 +185,12 @@ class AutoCompleteSelect extends HTMLElement {
     return ['message', 'options'];
   }
 
-  clampNumber(num,min,max) {
-    return Math.min(Math.max(num,min),max)
+  clampNumber(num, min, max) {
+    return Math.min(Math.max(num, min), max);
   }
 
   connectedCallback() {
-
-    if(this.$clearButton.isConnected) {
+    if (this.$clearButton.isConnected) {
       this.$clearButton.addEventListener('click', e => {
         this.$input.value = '';
         this.$clearButton.classList.add('isHidden');
@@ -203,47 +202,48 @@ class AutoCompleteSelect extends HTMLElement {
       this.$addButton.addEventListener('click', () => this.addDaoHandler(this.$input));
     }
 
-    if(this.$wrapper.isConnected){
-      this.shadowRoot.addEventListener('keydown', (event) => {
-        const name = event.key;
-        const code = event.code;
-        if (name === 'Control') {
-          // Do nothing.
-          return;
-        }
-        let elem = null;
-        const children = this.shadowRoot.querySelector('ul').children;
+    if (this.$wrapper.isConnected) {
+      this.shadowRoot.addEventListener(
+        'keydown',
+        event => {
+          const name = event.key;
+          const code = event.code;
+          if (name === 'Control') {
+            // Do nothing.
+            return;
+          }
+          let elem = null;
+          const children = this.shadowRoot.querySelector('ul').children;
 
-        switch (code) {
-          case 'ArrowDown':
+          switch (code) {
+            case 'ArrowDown':
               elem = children.item(this.elemIndex);
-              elem.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});
+              elem.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
               elem.firstElementChild.focus();
 
-              this.elemIndex = this.clampNumber(this.elemIndex+1, 0,children.length-1);            
-            break;
-          case 'ArrowUp':
+              this.elemIndex = this.clampNumber(this.elemIndex + 1, 0, children.length - 1);
+              break;
+            case 'ArrowUp':
               elem = children.item(this.elemIndex);
-              elem.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});
+              elem.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
               elem.firstElementChild.focus();
-              this.elemIndex = this.clampNumber(this.elemIndex-1, 0,children.length-1);
-          break;
+              this.elemIndex = this.clampNumber(this.elemIndex - 1, 0, children.length - 1);
+              break;
 
-          default:
-            break;
-        }
-      }, false);
+            default:
+              break;
+          }
+        },
+        false,
+      );
     }
 
     if (this.$inputWrapper.isConnected) {
-      document.onclick = e => {
-        this.$optionsWrapper.classList[this.$inputWrapper.contains(this.shadowRoot.activeElement) ? 'remove' : 'add'](
-          'isHidden',
-        );
-        this.$wrapper.classList[this.$inputWrapper.contains(this.shadowRoot.activeElement) ? 'add' : 'remove'](
-          'open',
-        );
-      };
+      document.addEventListener('click', e => {
+        const hasActive = this.$inputWrapper.contains(this.shadowRoot.activeElement);
+        this.$optionsWrapper.classList[hasActive ? 'remove' : 'add']('isHidden');
+        this.$wrapper.classList[hasActive ? 'add' : 'remove']('open');
+      });
     }
 
     if (this.$input.isConnected) {
@@ -252,33 +252,40 @@ class AutoCompleteSelect extends HTMLElement {
 
       this.$input.placeholder = placeHolderText;
       this.$input.addEventListener('input', e => {
-        const noResultText = styles.style.getPropertyValue('--noResultText').replace('%DAO%', this.$input.value).trim();
+        const noResultText = styles.style
+          .getPropertyValue('--noResultText')
+          .replace('%DAO%', this.$input.value)
+          .trim();
         this.$optionsWrapper.classList.remove('isHidden');
         this.$wrapper.classList.add('open');
         const filteredList = e.target.value
           ? this._options.filter(option => option.name.toLowerCase().includes(e.target.value.toLowerCase()))
           : this._options;
-        if (!e.target.value.trim() || (this._options.filter(option => option.name.toLowerCase() === e.target.value.toLowerCase().trim())).length === 1) {
-          this.$addButton.classList.add("isHidden");
+        if (
+          !e.target.value.trim() ||
+          this._options.filter(option => option.name.toLowerCase() === e.target.value.toLowerCase().trim()).length ===
+            1
+        ) {
+          this.$addButton.classList.add('isHidden');
         } else {
           this.$noResultMsg.innerHTML = noResultText;
-          this.$addButton.classList.remove("isHidden");
+          this.$addButton.classList.remove('isHidden');
         }
         this.buildList(filteredList);
       });
 
       this.$input.addEventListener('keydown', e => {
         const code = e.code;
-        if(code === 'Enter'){
-          this.addDaoHandler(e.target)    
+        if (code === 'Enter') {
+          this.addDaoHandler(e.target);
         }
       });
     }
   }
 
-  addDaoHandler(){
-    const newItem = { name: this.$input.value, avatarUrl: "", treasuryAddresses: [], id: Date.now().toString() };
-    if (newItem.name && (this._options.filter(option => option.name === newItem.name)).length === 0) {
+  addDaoHandler() {
+    const newItem = { name: this.$input.value, avatarUrl: '', treasuryAddresses: [], id: Date.now().toString() };
+    if (newItem.name && this._options.filter(option => option.name === newItem.name).length === 0) {
       this._options.push(newItem);
       this.buildList(this._options);
       this.$addButton.classList.add('isHidden');
@@ -288,7 +295,7 @@ class AutoCompleteSelect extends HTMLElement {
       this.dispatchEvent(new CustomEvent('daoSelectionChanged', { detail: { ...newItem } }));
     }
     this.$addButton.blur();
-    if (this.$clearButton.classList.contains('isHidden')){
+    if (this.$clearButton.classList.contains('isHidden')) {
       this.$clearButton.classList.remove('isHidden');
     }
   }
@@ -300,38 +307,38 @@ class AutoCompleteSelect extends HTMLElement {
     }
     const ul = document.createElement('ul');
     this.$input.addEventListener('input', e => {
-      this.$clearButton.classList[e.target.value.length > 0 ?"remove":"add"]("isHidden");
+      this.$clearButton.classList[e.target.value.length > 0 ? 'remove' : 'add']('isHidden');
     });
     ul.addEventListener('click', e => {
       const id = e.target.dataset.daoId || e.target.closest('li').dataset.daoId;
-      if(!id) {
+      if (!id) {
         return;
       }
       const result = this._options.find(item => item.id === id);
-      if(result){
+      if (result) {
         this.$input.value = e.target.innerText;
         this.dispatchEvent(new CustomEvent('daoSelectionChanged', { detail: { ...result } }));
-        if (this.$clearButton.classList.contains('isHidden')){
+        if (this.$clearButton.classList.contains('isHidden')) {
           this.$clearButton.classList.remove('isHidden');
         }
       }
-    })
+    });
 
     const listFragment = document.createDocumentFragment();
     data.forEach((option, index) => {
       try {
-        const img = document.createElement('img')
+        const img = document.createElement('img');
         const span = document.createElement('span');
-        const li = document.createElement('li')
-        const button = document.createElement('button')
-        if(option.avatarUrl) {
-          img.setAttribute("src",option.avatarUrl);
-          img.setAttribute("width", 20);
+        const li = document.createElement('li');
+        const button = document.createElement('button');
+        if (option.avatarUrl) {
+          img.setAttribute('src', option.avatarUrl);
+          img.setAttribute('width', 20);
           button.appendChild(img);
         }
         span.innerText = option.name;
         button.appendChild(span);
-        li.classList.add("listItem");
+        li.classList.add('listItem');
         li.setAttribute('data-dao-id', option.id);
         li.append(button);
         listFragment.appendChild(li);
