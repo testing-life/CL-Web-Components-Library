@@ -171,6 +171,7 @@ class AutoCompleteSelect extends HTMLElement {
     this.shadowRoot.appendChild(autoCompleteSelectTemplate.content.cloneNode(true));
     this._options = [];
     this._filteredOptions = [];
+    // this.$init = init;
     this.$wrapper = this.shadowRoot.querySelector('#selectInput');
     this.$input = this.shadowRoot.querySelector('input');
     this.$inputWrapper = this.shadowRoot.querySelector('.inputWrapper');
@@ -179,6 +180,17 @@ class AutoCompleteSelect extends HTMLElement {
     this.$clearButton = this.shadowRoot.querySelector('.clear');
     this.$noResultMsg = this.shadowRoot.querySelector('.noResult__msg');
     this.elemIndex = 0;
+  }
+
+  init (config) {
+    console.log("init", this.id);
+    this._options = [...config.data];
+    this.addEventListener( 'newDaoAdded', e => {
+      console.log( 'new dao added', e.detail )
+    } );
+    this.addEventListener( 'daoSelectionChanged', e => {
+      console.log( this.id, e.detail, dataObj[ e.detail.id ] )
+    } )
   }
 
   static get observedAttributes() {
@@ -204,6 +216,11 @@ class AutoCompleteSelect extends HTMLElement {
     }
 
     if(this.$wrapper.isConnected){
+      
+    console.log("initialize!", this.init.arguments);
+      if (this.config?.data?.length) {
+        this.init(this.config);
+      }
       this.shadowRoot.addEventListener('keydown', (event) => {
         const name = event.key;
         const code = event.code;

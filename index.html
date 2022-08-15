@@ -72,7 +72,16 @@
     <ens-lookup result="" error=""> </ens-lookup>
     <ens-lookup id="ensLookup" result="" error=""> </ens-lookup>
     <h3>autocompelte</h3>
-    <autocomplete-select id="select">
+    <autocomplete-select id="select1">
+      <span slot="button-icon-close"><i class="fas fa-times"></i></span>
+      <span slot="button-icon-add"><i class="fas fa-plus-circle"></i></span>
+      <span slot="button-icon-regular"><i class="fas fa-search"></i></span>
+    </autocomplete-select>
+    <p>text</p>
+    <p>text</p>
+    <p>text</p>
+    <p>text</p>
+    <autocomplete-select id="select2">
       <span slot="button-icon-close"><i class="fas fa-times"></i></span>
       <span slot="button-icon-add"><i class="fas fa-plus-circle"></i></span>
       <span slot="button-icon-regular"><i class="fas fa-search"></i></span>
@@ -133,7 +142,8 @@
       }
     } )
 
-      const select = document.querySelector( '#select' )
+            const select1 = document.getElementById( 'select1' )
+            const select2 = document.querySelector( '#select2' );
 
       const dataObj = {
         "ac55f20b-7625-465c-80a5-a57e22829716": {
@@ -193,20 +203,13 @@
         }
       }
 
-        arr = Object.keys( dataObj ).map( item => {
+          const data = Object.keys( dataObj ).map( item => {
           return { ...dataObj[ item ], id: item }
         } )
 
-        const data = JSON.stringify( arr )
-
-      select.setAttribute( 'options', data );
-
-      select.addEventListener( 'newDaoAdded', e => {
-        console.log( 'new dao added', e.detail )
-      } );
-      select.addEventListener( 'daoSelectionChanged', e => {
-        console.log( 'selected', e.detail, dataObj[ e.detail.id ] )
-      } );
+        console.log( select1, select2 )
+        select1.init( { data } )
+        select2.init( { data } );
     </script>
     <script src="https://kit.fontawesome.com/bf98881e0a.js" crossorigin="anonymous"></script>
   </body>
