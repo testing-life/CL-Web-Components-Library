@@ -177,6 +177,42 @@ export default MaxInputWebComponent;
 />
 ```
 
+## Aurelia useage example
+
+In view:
+```
+ <autocomplete-select
+  placeholder="Select your DAO..."
+  searchText="No DAO found, add '%VAL%' manually"
+  value.bind="data.name"
+  ref="refSelectDAO">
+  <span slot="button-icon-close"><i class="fas fa-times"></i></span>
+  <span slot="button-icon-add"><i class="fas fa-plus-circle"></i></span>
+  <span slot="button-icon-regular"><i class="fas fa-search"></i></span>
+</autocomplete-select>
+```
+
+In controller:
+```
+import "cl-webcomp-poc";
+```
+
+Then, get element's ref:
+```
+private refSelectDAO: HTMLElement;
+```
+
+Then, when data is ready:
+```
+this.refSelectDAO.setAttribute("options", this.daoListStr);
+```
+
+To attach event handlers:
+```
+this.refSelectDAO.addEventListener('daoSelectionChanged', async (e) => // your code)
+```
+
+
 ## Inheritable CSS properties
 
 We components can inherit some css properties from parent/global scope, eliminating the need to repeat them within the component.
