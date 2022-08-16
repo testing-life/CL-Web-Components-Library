@@ -146,7 +146,7 @@ autoCompleteSelectTemplate.innerHTML = `
       </label>
 
       <div class='inputWrapper'>
-        <input id='textInput' value type='text' />
+        <input id='textInput' type='text' />
         <button class='clear isHidden'><slot name="button-icon-close">X</slot></button>
         <button><slot name="button-icon-search"></slot></button>
       </div>
@@ -182,7 +182,7 @@ class AutoCompleteSelect extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['options', 'placeholder', 'search-text'];
+    return ['value', 'options', 'placeholder', 'search-text'];
   }
 
   clampNumber(num, min, max) {
@@ -249,26 +249,7 @@ class AutoCompleteSelect extends HTMLElement {
 
     if (this.$input.isConnected) {
       this.$input.placeholder = this._placeholder.trim();
-      this.$input.addEventListener('input', e => {
-        const noResultText = this._searchText.replace('%VAL%', this.$input.value).trim();
-        this.$optionsWrapper.classList.remove('isHidden');
-        this.$wrapper.classList.add('open');
-        const filteredList = e.target.value
-          ? this._options.filter(option => option.name.toLowerCase().includes(e.target.value.toLowerCase()))
-          : this._options;
-        if (
-          !e.target.value.trim() ||
-          this._options.filter(option => option.name.toLowerCase() === e.target.value.toLowerCase().trim()).length ===
-            1
-        ) {
-          this.$addButton.classList.add('isHidden');
-        } else {
-          this.$noResultMsg.innerHTML = noResultText;
-          this.$addButton.classList.remove('isHidden');
-        }
-        this.buildList(filteredList);
-      });
-
+      this.$input.addEventListener('input', e => this.inputChangedHandler(e.target.value));
       this.$input.addEventListener('keydown', e => {
         const code = e.code;
         if (code === 'Enter') {
@@ -276,6 +257,36 @@ class AutoCompleteSelect extends HTMLElement {
         }
       });
     }
+  }
+
+  inputChangedHandler = (value) => {
+    const noResultText = this._searchText
+      .replace('%VAL%', this.$input.value)
+      .trim();
+    this.$optionsWrapper.classList.remove('isHidden');
+    this.$wrapper.classList.add('open');
+    const filteredList = value
+      ? this._options.filter(option => option.name.toLowerCase().includes(value.toLowerCase()))
+      : this._options;
+    if (
+      !value.trim() ||
+      this._options.filter(option => option.name.toLowerCase() === value.toLowerCase().trim()).length ===
+        1
+    ) {
+      this.$addButton.classList.add('isHidden');
+    } else {
+      this.$noResultMsg.innerHTML = noResultText;
+      this.$addButton.classList.remove('isHidden');
+    }
+    this.buildList(filteredList);
+    const result = filteredList.find(item => item.name === this.$input.value) ||
+      {
+        name: this.$input.value, 
+        avatarUrl: '', 
+        treasuryAddresses: [], 
+        id: Date.now().toString() 
+      };
+    this.dispatchEvent(new CustomEvent('daoSelectionChanged', { detail: { ...result } }));
   }
 
   addDaoHandler() {
@@ -357,6 +368,10 @@ class AutoCompleteSelect extends HTMLElement {
         joined += a[0].toUpperCase() + a.substring(1);
       });
       this['_' + joined] = newValue;
+    }
+    if (this.$input.isConnected && name === 'value') {
+      this.$input.value = this._value;
+      this.inputChangedHandler(this._value);
     }
   }
 }
