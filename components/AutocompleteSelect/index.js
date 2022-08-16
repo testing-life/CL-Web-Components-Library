@@ -15,8 +15,6 @@ autoCompleteSelectTemplate.innerHTML = `
         --maxScrollerHeight: 135px;
         --inputboxHeight: 46px;
         --avatarSize: 32px;
-        --placeholderText: Select your DAO...;
-        --noResultText: No DAO found, add '%DAO%' manually;
       }
 
       #selectInput {
@@ -170,6 +168,8 @@ class AutoCompleteSelect extends HTMLElement {
     this.attachShadow({ mode: 'open' });
     this.shadowRoot.appendChild(autoCompleteSelectTemplate.content.cloneNode(true));
     this._options = [];
+    this._placeholder = "Search...";
+    this._searchText = "Not found. Add '%VAL%' manually...";
     this._filteredOptions = [];
     this.$wrapper = this.shadowRoot.querySelector('#selectInput');
     this.$input = this.shadowRoot.querySelector('input');
@@ -182,7 +182,7 @@ class AutoCompleteSelect extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['message', 'options'];
+    return ['message', 'options', 'placeholder', 'search-text'];
   }
 
   clampNumber(num, min, max) {
@@ -195,6 +195,7 @@ class AutoCompleteSelect extends HTMLElement {
         this.$input.value = '';
         this.$clearButton.classList.add('isHidden');
         this.buildList(this._options);
+        this.dispatchEvent(new CustomEvent('inputCleared', {}))
       });
     }
 
@@ -247,14 +248,10 @@ class AutoCompleteSelect extends HTMLElement {
     }
 
     if (this.$input.isConnected) {
-      const styles = this.shadowRoot.styleSheets[0].cssRules.item(':host');
-      const placeHolderText = styles.style.getPropertyValue('--placeholderText').trim();
-
-      this.$input.placeholder = placeHolderText;
+      this.$input.placeholder = this._placeholder.trim();
       this.$input.addEventListener('input', e => {
-        const noResultText = styles.style
-          .getPropertyValue('--noResultText')
-          .replace('%DAO%', this.$input.value)
+        const noResultText = this._searchText
+          .replace('%VAL%', this.$input.value)
           .trim();
         this.$optionsWrapper.classList.remove('isHidden');
         this.$wrapper.classList.add('open');
@@ -351,9 +348,15 @@ class AutoCompleteSelect extends HTMLElement {
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    if (name === 'options' && newValue) {
+    if (!newValue || !name) return;
+    if (name === 'options') {
       this._options = JSON.parse(newValue);
       this.buildList(JSON.parse(newValue));
+    } else {
+      const temp = name.split('-')
+      let joined = temp.shift(0);
+      temp.forEach(a => {joined += a[0].toUpperCase() + a.substring(1)});
+      this["_" + joined] = newValue;
     }
   }
 }
