@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <script type="module">
-  import { Services, MaxInput, TrimAddress, EnsLookup, AutoCompleteSelect } from './index.js'
+  import { Services, MaxInput, TrimAddress, EnsLookup, AutoCompleteSelect } from './index.js';
   // import { ethers } from 'https://cdn.ethers.io/lib/ethers-5.2.esm.min.js';
   window.services = Services;
   // window.ethers = ethers;
@@ -84,7 +84,7 @@
     <autocomplete-select id="select2" placeholder="test2" search-text="search %VAL% 2">
       <span slot="button-icon-close"><i class="fas fa-times"></i></span>
       <span slot="button-icon-add"><i class="fas fa-plus-circle"></i></span>
-      <span slot="button-icon-regular"><i class="fas fa-search"></i></span>
+      <span slot="button-icon-search"><i class="fas fa-search"></i></span>
     </autocomplete-select>
     <p>text</p>
     <p>text</p>
@@ -216,9 +216,9 @@
       select.addEventListener('newDaoAdded', e => {
         console.log('new dao added 2', e.detail);
       });
-      select.addEventListener( 'inputCleared', e => {
-        console.log( 'input cleared', e.detail )
-      } );
+      select.addEventListener('inputCleared', e => {
+        console.log('input cleared', e.detail);
+      });
       select.addEventListener('daoSelectionChanged', e => {
         console.log('selected', e.detail, dataObj[e.detail.id]);
       });

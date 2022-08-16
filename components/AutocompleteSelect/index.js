@@ -148,7 +148,7 @@ autoCompleteSelectTemplate.innerHTML = `
       <div class='inputWrapper'>
         <input id='textInput' value type='text' />
         <button class='clear isHidden'><slot name="button-icon-close">X</slot></button>
-        <button><slot name="button-icon-regular">></slot></button>
+        <button><slot name="button-icon-search"></slot></button>
       </div>
 
       <div class='optionsWrapper isHidden'>
@@ -168,7 +168,7 @@ class AutoCompleteSelect extends HTMLElement {
     this.attachShadow({ mode: 'open' });
     this.shadowRoot.appendChild(autoCompleteSelectTemplate.content.cloneNode(true));
     this._options = [];
-    this._placeholder = "Search...";
+    this._placeholder = 'Search...';
     this._searchText = "Not found. Add '%VAL%' manually...";
     this._filteredOptions = [];
     this.$wrapper = this.shadowRoot.querySelector('#selectInput');
@@ -182,7 +182,7 @@ class AutoCompleteSelect extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['message', 'options', 'placeholder', 'search-text'];
+    return ['options', 'placeholder', 'search-text'];
   }
 
   clampNumber(num, min, max) {
@@ -195,7 +195,7 @@ class AutoCompleteSelect extends HTMLElement {
         this.$input.value = '';
         this.$clearButton.classList.add('isHidden');
         this.buildList(this._options);
-        this.dispatchEvent(new CustomEvent('inputCleared', {}))
+        this.dispatchEvent(new CustomEvent('inputCleared', {}));
       });
     }
 
@@ -250,9 +250,7 @@ class AutoCompleteSelect extends HTMLElement {
     if (this.$input.isConnected) {
       this.$input.placeholder = this._placeholder.trim();
       this.$input.addEventListener('input', e => {
-        const noResultText = this._searchText
-          .replace('%VAL%', this.$input.value)
-          .trim();
+        const noResultText = this._searchText.replace('%VAL%', this.$input.value).trim();
         this.$optionsWrapper.classList.remove('isHidden');
         this.$wrapper.classList.add('open');
         const filteredList = e.target.value
@@ -353,10 +351,12 @@ class AutoCompleteSelect extends HTMLElement {
       this._options = JSON.parse(newValue);
       this.buildList(JSON.parse(newValue));
     } else {
-      const temp = name.split('-')
+      const temp = name.split('-');
       let joined = temp.shift(0);
-      temp.forEach(a => {joined += a[0].toUpperCase() + a.substring(1)});
-      this["_" + joined] = newValue;
+      temp.forEach(a => {
+        joined += a[0].toUpperCase() + a.substring(1);
+      });
+      this['_' + joined] = newValue;
     }
   }
 }

@@ -87,6 +87,54 @@ Example:
 - --fontWeight: inherit;
 - --padding: 5px;
 
+## `autocomplete-select` component
+
+Example:
+`<autocomplete-select options='' placeholder="test1" search-text="search %VAL% 1"> </autocomplete-select>`
+
+### `autocomplete-select` component attributes
+
+Example of Dao object
+
+```
+'d9c9fae9-049f-4123-805b-37bbb7b3c931': {
+    'name': 'Unity Project',
+    'avatarUrl': null,
+    'treasuryAddresses': ['unityproject.eth']
+}
+```
+
+| attribute            | optional | type   | possible values | purpose                                            |
+| -------------------- | -------- | ------ | --------------- | -------------------------------------------------- |
+| `options`            | required | array  |                 | **stringified** array of objects with data of Daos |
+| `placeholder`        | optional | string |                 | input placeholder text                             |
+| `search-text`        | optional | string |                 | text in case filtering returns no results          |
+| `button-icon-close`  | optional | slot   |                 | a named slot for custom close icon                 |
+| `button-icon-add`    | optional | slot   |                 | a named slot for custom add icon                   |
+| `button-icon-search` | optional | slot   |                 | a named slot for custom close icon                 |
+
+### `autocomplete-select` component exposed events
+
+- `inputCleared`: notifies of clearing of the input field, returns nothing `
+- `newDaoAdded`: notifies of new Dao being manually added with default values, retuns a Dao object `{detail: value}`
+- `daoSelectionChanged`: notifies of Dao selection, retuns a Dao object `{detail: value}`
+
+### `autocomplete-select` component CSS props
+
+- --borderRadius: 5px;
+- --spacingSmall: 5px;
+- --spacingNormal: 10px;
+- --backgroundNormal: lightsteelblue;
+- --borderNormal: plum;
+- --borderHighlight: pink;
+- --optionHover: pink;
+- --textNormal: black;
+- --textError: red;
+- --textWarning: orange;
+- --maxScrollerHeight: 135px;
+- --inputboxHeight: 46px;
+- --avatarSize: 32px;
+
 ## React use example
 
 Web components need to be wrapped up in a React component, which then can be used as any other component in the app.
