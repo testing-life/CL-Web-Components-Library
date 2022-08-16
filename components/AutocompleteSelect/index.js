@@ -252,7 +252,7 @@ class AutoCompleteSelect extends HTMLElement {
       this.$input.addEventListener('input', e => this.inputChangedHandler(e.target.value));
       this.$input.addEventListener('keydown', e => {
         const code = e.code;
-        if (code === 'Enter') {
+        if (code === 'Enter' && !this.$addButton.classList.contains('isHidden')) {
           this.addDaoHandler(e.target);
         }
       });
@@ -270,8 +270,7 @@ class AutoCompleteSelect extends HTMLElement {
       : this._options;
     if (
       !value.trim() ||
-      this._options.filter(option => option.name.toLowerCase() === value.toLowerCase().trim()).length ===
-        1
+      this._options.find(option => option.name.toLowerCase().trim() === value.toLowerCase().trim())
     ) {
       this.$addButton.classList.add('isHidden');
     } else {
@@ -282,22 +281,25 @@ class AutoCompleteSelect extends HTMLElement {
     const result = filteredList.find(item => item.name === this.$input.value) ||
       {
         name: this.$input.value, 
-        avatarUrl: '', 
-        treasuryAddresses: [], 
-        id: Date.now().toString() 
+        avatarUrl: '',
+        treasuryAddresses: [],
+        id: "custom-dao-" + Date.now().toString(),
       };
     this.dispatchEvent(new CustomEvent('daoSelectionChanged', { detail: { ...result } }));
   }
 
   addDaoHandler() {
-    const newItem = { name: this.$input.value, avatarUrl: '', treasuryAddresses: [], id: Date.now().toString() };
-    if (newItem.name && this._options.filter(option => option.name === newItem.name).length === 0) {
+    const newItem = { name: this.$input.value, avatarUrl: '', treasuryAddresses: [], id: "custom-dao-" + Date.now().toString() };
+    if (newItem.name && !this._options.find(option => option.name === newItem.name)) {
       this._options.push(newItem);
-      this.buildList(this._options);
+      const filteredList = newItem.name
+        ? this._options.filter(option => option.name.toLowerCase().includes(newItem.name.toLowerCase()))
+        : this._options;
+      this.buildList(filteredList);
       this.$addButton.classList.add('isHidden');
       this.$optionsWrapper.classList.add('isHidden');
       this.$wrapper.classList.remove('open');
-      this.dispatchEvent(new CustomEvent('newDaoAdded', { detail: { newDao: newItem } }));
+      this.dispatchEvent(new CustomEvent('newDaoAdded', { detail: { ...newItem } }));
       this.dispatchEvent(new CustomEvent('daoSelectionChanged', { detail: { ...newItem } }));
     }
     this.$addButton.blur();
