@@ -6,7 +6,7 @@ Exposed CSS properties for styling and default values:
 
 Example:
 
-```
+```HTML
 <max-input required input="" error="" max="" layout="boxy">
     <span slot="input-label">Im another label boxy</span>
 </max-input>
@@ -47,7 +47,9 @@ Example:
 ## `trim-address` component
 
 Example:
-`<trim-address wallet="0x71C7656EC7ab88b098defB751B7401B5f6d8976F"></trim-address>`
+```HTML
+<trim-address wallet="0x71C7656EC7ab88b098defB751B7401B5f6d8976F"></trim-address>
+```
 
 ### `trim-address` component attributes
 
@@ -66,7 +68,9 @@ Example:
 ## `ens-lookup` component
 
 Example:
-`<ens-lookup result="" error=""> </ens-lookup>`
+```HTML
+<ens-lookup result="" error=""> </ens-lookup>`
+```
 
 ### `ens-lookup` component attributes
 
@@ -90,25 +94,37 @@ Example:
 ## `autocomplete-select` component
 
 Example:
-`<autocomplete-select options='' placeholder="test1" search-text="search %VAL% 1"> </autocomplete-select>`
+````HTML
+<autocomplete-select
+  options=''
+  value=''
+  placeholder='test1'
+  search-text='search %VAL% 1'
+  default-avatar=''>
+</autocomplete-select>
+````
+
+
 
 ### `autocomplete-select` component attributes
 
 Example of Dao object
 
-```
-'d9c9fae9-049f-4123-805b-37bbb7b3c931': {
-    'name': 'Unity Project',
-    'avatarUrl': null,
-    'treasuryAddresses': ['unityproject.eth']
+```JSON
+"d9c9fae9-049f-4123-805b-37bbb7b3c931": {
+    "name": "Unity Project",
+    "avatarUrl": null,
+    "treasuryAddresses": ["unityproject.eth"],
 }
 ```
 
 | attribute            | optional | type   | possible values | purpose                                            |
 | -------------------- | -------- | ------ | --------------- | -------------------------------------------------- |
-| `options`            | required | array  |                 | **stringified** array of objects with data of Daos |
+| `options`            | required | array  |                 | **stringified** array of objects with data of DAOs |
+| `value`              | optional | string |                 | preselected **name** value from the options        |
 | `placeholder`        | optional | string |                 | input placeholder text                             |
 | `search-text`        | optional | string |                 | text in case filtering returns no results          |
+| `default-avatar`     | optional | string |                 | URL / filename pointing to a default avatar        |
 | `button-icon-close`  | optional | slot   |                 | a named slot for custom close icon                 |
 | `button-icon-add`    | optional | slot   |                 | a named slot for custom add icon                   |
 | `button-icon-search` | optional | slot   |                 | a named slot for custom close icon                 |
@@ -116,8 +132,22 @@ Example of Dao object
 ### `autocomplete-select` component exposed events
 
 - `inputCleared`: notifies of clearing of the input field, returns nothing `
-- `newDaoAdded`: notifies of new Dao being manually added with default values, retuns a Dao object `{detail: value}`
-- `daoSelectionChanged`: notifies of Dao selection, retuns a Dao object `{detail: value}`
+- `newDaoAdded`: notifies of new Dao being manually added with default values, returns a DAO object
+- `daoSelectionChanged`: notifies of DAO selection, returns a DAO object`
+
+DAO object:
+```JSON
+{
+  detail: {
+    "name": string,
+    "avatarUrl": string,
+    "treasuryAddresses": Array<string>,
+    "id:": string 
+    /* New items (not from the 'options' list) get 
+      the following 'id' format: "custom-dao-<Date.now()>" */
+  }
+}
+```
 
 ### `autocomplete-select` component CSS props
 
@@ -141,7 +171,7 @@ Web components need to be wrapped up in a React component, which then can be use
 
 `MaxInputWebComponent.tsx`
 
-```
+```TSX
 import 'cl-webcomp-poc/MaxInput';
 import React, { useEffect, useRef } from 'react';
 
@@ -166,7 +196,7 @@ export default MaxInputWebComponent;
 
 `any other react component`
 
-```
+```HTML
 <MaxInputWebComponent
     input={txValues.fromValueFormatted || '0'}
     max={balances && getMaxAllowance(balances, from)}
