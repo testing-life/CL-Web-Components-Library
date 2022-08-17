@@ -170,6 +170,8 @@ class AutoCompleteSelect extends HTMLElement {
     this._options = [];
     this._placeholder = 'Search...';
     this._searchText = "Not found. Add '%VAL%' manually...";
+    this._value = '';
+    this._defaultAvatar = '';
     this._filteredOptions = [];
     this.$wrapper = this.shadowRoot.querySelector('#selectInput');
     this.$input = this.shadowRoot.querySelector('input');
@@ -182,7 +184,7 @@ class AutoCompleteSelect extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['value', 'options', 'placeholder', 'search-text'];
+    return ['value', 'options', 'placeholder', 'search-text', 'default-avatar'];
   }
 
   clampNumber(num, min, max) {
@@ -242,6 +244,9 @@ class AutoCompleteSelect extends HTMLElement {
     if (this.$inputWrapper.isConnected) {
       document.addEventListener('click', e => {
         const hasActive = this.$inputWrapper.contains(this.shadowRoot.activeElement);
+        if(hasActive) {
+          this.inputChangedHandler(this.$input.value);
+        }
         this.$optionsWrapper.classList[hasActive ? 'remove' : 'add']('isHidden');
         this.$wrapper.classList[hasActive ? 'add' : 'remove']('open');
       });
@@ -259,14 +264,16 @@ class AutoCompleteSelect extends HTMLElement {
     }
   }
 
-  inputChangedHandler = (value) => {
+  inputChangedHandler = (value, keepClose = false) => {
     const noResultText = this._searchText
       .replace('%VAL%', this.$input.value)
       .trim();
-    this.$optionsWrapper.classList.remove('isHidden');
-    this.$wrapper.classList.add('open');
+    if (!keepClose) {
+      this.$optionsWrapper.classList.remove('isHidden');
+      this.$wrapper.classList.add('open');
+    }
     const filteredList = value
-      ? this._options.filter(option => option.name.toLowerCase().includes(value.toLowerCase()))
+      ? this._options.filter(option => option.name.toLowerCase().includes(value.toLowerCase().trim()))
       : this._options;
     if (
       !value.trim() ||
@@ -281,7 +288,7 @@ class AutoCompleteSelect extends HTMLElement {
     const result = filteredList.find(item => item.name === this.$input.value) ||
       {
         name: this.$input.value, 
-        avatarUrl: '',
+        avatarUrl: this._defaultAvatar,
         treasuryAddresses: [],
         id: "custom-dao-" + Date.now().toString(),
       };
@@ -289,7 +296,7 @@ class AutoCompleteSelect extends HTMLElement {
   }
 
   addDaoHandler() {
-    const newItem = { name: this.$input.value, avatarUrl: '', treasuryAddresses: [], id: "custom-dao-" + Date.now().toString() };
+    const newItem = { name: this.$input.value, avatarUrl: this._defaultAvatar, treasuryAddresses: [], id: "custom-dao-" + Date.now().toString() };
     if (newItem.name && !this._options.find(option => option.name === newItem.name)) {
       this._options.push(newItem);
       const filteredList = newItem.name
@@ -324,7 +331,7 @@ class AutoCompleteSelect extends HTMLElement {
       }
       const result = this._options.find(item => item.id === id);
       if (result) {
-        this.$input.value = e.target.innerText;
+        this.$input.value = result.name;
         this.dispatchEvent(new CustomEvent('daoSelectionChanged', { detail: { ...result } }));
         if (this.$clearButton.classList.contains('isHidden')) {
           this.$clearButton.classList.remove('isHidden');
@@ -339,8 +346,8 @@ class AutoCompleteSelect extends HTMLElement {
         const span = document.createElement('span');
         const li = document.createElement('li');
         const button = document.createElement('button');
-        if (option.avatarUrl) {
-          img.setAttribute('src', option.avatarUrl);
+        if (option.avatarUrl || this._defaultAvatar) {
+          img.setAttribute('src', option.avatarUrl || this._defaultAvatar);
           img.setAttribute('width', 20);
           button.appendChild(img);
         }
@@ -362,7 +369,7 @@ class AutoCompleteSelect extends HTMLElement {
     if (!newValue || !name) return;
     if (name === 'options') {
       this._options = JSON.parse(newValue);
-      this.buildList(JSON.parse(newValue));
+      this.inputChangedHandler(this._value, true);
     } else {
       const temp = name.split('-');
       let joined = temp.shift(0);
@@ -373,7 +380,7 @@ class AutoCompleteSelect extends HTMLElement {
     }
     if (this.$input.isConnected && name === 'value') {
       this.$input.value = this._value;
-      this.inputChangedHandler(this._value);
+      this.inputChangedHandler(this._value, true);
     }
   }
 }
