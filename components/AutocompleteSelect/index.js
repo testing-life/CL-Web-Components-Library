@@ -264,6 +264,12 @@ class AutoCompleteSelect extends HTMLElement {
     }
   }
 
+  filterList(value) {
+    return !!value && !! this._options
+      ? this._options.filter(option => !!option.name && option.name.toLowerCase().includes(value.toLowerCase().trim()))
+      : this._options;
+  }
+
   inputChangedHandler = (value, keepClose = false) => {
     const noResultText = this._searchText
       .replace('%VAL%', this.$input.value)
@@ -272,12 +278,10 @@ class AutoCompleteSelect extends HTMLElement {
       this.$optionsWrapper.classList.remove('isHidden');
       this.$wrapper.classList.add('open');
     }
-    const filteredList = value
-      ? this._options.filter(option => option.name.toLowerCase().includes(value.toLowerCase().trim()))
-      : this._options;
+    const filteredList = this.filterList(value);
     if (
       !value.trim() ||
-      this._options.find(option => option.name.toLowerCase().trim() === value.toLowerCase().trim())
+      this._options.find(option => !!option.name && option.name.toLowerCase().trim() === value.toLowerCase().trim())
     ) {
       this.$addButton.classList.add('isHidden');
     } else {
@@ -299,9 +303,7 @@ class AutoCompleteSelect extends HTMLElement {
     const newItem = { name: this.$input.value, avatarUrl: this._defaultAvatar, treasuryAddresses: [], id: "custom-dao-" + Date.now().toString() };
     if (newItem.name && !this._options.find(option => option.name === newItem.name)) {
       this._options.push(newItem);
-      const filteredList = newItem.name
-        ? this._options.filter(option => option.name.toLowerCase().includes(newItem.name.toLowerCase()))
-        : this._options;
+      const filteredList = this.filterList(newItem.name);
       this.buildList(filteredList);
       this.$addButton.classList.add('isHidden');
       this.$optionsWrapper.classList.add('isHidden');
@@ -365,24 +367,42 @@ class AutoCompleteSelect extends HTMLElement {
     this.$optionsWrapper.insertAdjacentElement('beforeend', ul);
   }
 
-  attributeChangedCallback(name, oldValue, newValue) {
-    if (!newValue || !name) return;
-    if (name === 'options') {
-      this._options = JSON.parse(newValue);
-      this.inputChangedHandler(this._value, true);
-    } else {
-      const temp = name.split('-');
-      let joined = temp.shift(0);
-      temp.forEach(a => {
-        joined += a[0].toUpperCase() + a.substring(1);
-      });
-      this['_' + joined] = newValue;
+  attributeChangedCallback(name, _, newAttributeValue) {
+    if (!newAttributeValue || !name) return;
+    switch (name) {
+      case 'options':
+        this._options = JSON
+          .parse(newAttributeValue)
+          .filter(option => !!option.name)
+        this.inputChangedHandler(this._value, true);
+        break;
+      default:
+        const temp = name.split('-');
+        let joined = temp.shift(0);
+        temp.forEach(a => {
+          joined += a[0].toUpperCase() + a.substring(1);
+        });
+        this['_' + joined] = newAttributeValue;
     }
+
+    /* Needs to be outside of the switch-case statement */
     if (this.$input.isConnected && name === 'value') {
       this.$input.value = this._value;
       this.inputChangedHandler(this._value, true);
     }
   }
+
+  init ( config ) {
+    try {
+      this._options = config.options || [];
+      this._value = config.value || '';
+    } catch ( error ) {
+      console.log("AutoCompleteSelect encounterded an error: ", { Error: error.message });
+    }
+  }
+
 }
 
 window.customElements.define('autocomplete-select', AutoCompleteSelect);
+
+export { AutoCompleteSelect }
