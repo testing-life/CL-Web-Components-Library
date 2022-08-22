@@ -129,20 +129,28 @@ Example of Dao object
 | `button-icon-add`    | optional | slot   |                 | a named slot for custom add icon                   |
 | `button-icon-search` | optional | slot   |                 | a named slot for custom close icon                 |
 
+### `autocomplete-select` component exposed methods
+- init({config})
+```TSX
+config:
+  - options: Array<DaoObject>
+  - value: string
+```
+
 ### `autocomplete-select` component exposed events
 
 - `inputCleared`: notifies of clearing of the input field, returns nothing `
 - `newDaoAdded`: notifies of new Dao being manually added with default values, returns a DAO object
 - `daoSelectionChanged`: notifies of DAO selection, returns a DAO object`
 
-DAO object:
-```JSON
+Example returned event DAO object:
+```TSX
 {
   detail: {
-    "name": string,
-    "avatarUrl": string,
-    "treasuryAddresses": Array<string>,
-    "id:": string 
+    name: string,
+    avatarUrl: string,
+    treasuryAddresses: Array<string>,
+    id: string 
     /* New items (not from the 'options' list) get 
       the following 'id' format: "custom-dao-<Date.now()>" */
   }
