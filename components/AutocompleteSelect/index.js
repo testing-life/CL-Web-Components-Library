@@ -394,11 +394,12 @@ class AutoCompleteSelect extends HTMLElement {
 
   init ( config ) {
     try {
-      this._options = config.options || [];
+      this._options = config.options.filter(option => !!option.name) || [];
       this._value = config.value || '';
     } catch ( error ) {
       console.log("AutoCompleteSelect encounterded an error: ", { Error: error.message });
     }
+    this.$input.value = this._value;
   }
 
 }
