@@ -293,6 +293,7 @@ class AutoCompleteSelect extends HTMLElement {
       {
         name: this.$input.value, 
         avatarUrl: this._defaultAvatar,
+        tokenAddresses: [],
         treasuryAddresses: [],
         id: "custom-dao-" + Date.now().toString(),
       };
@@ -300,7 +301,7 @@ class AutoCompleteSelect extends HTMLElement {
   }
 
   addDaoHandler() {
-    const newItem = { name: this.$input.value, avatarUrl: this._defaultAvatar, treasuryAddresses: [], id: "custom-dao-" + Date.now().toString() };
+    const newItem = { name: this.$input.value, avatarUrl: this._defaultAvatar, tokenAddresses: [], treasuryAddresses: [], id: "custom-dao-" + Date.now().toString() };
     if (newItem.name && !this._options.find(option => option.name === newItem.name)) {
       this._options.push(newItem);
       const filteredList = this.filterList(newItem.name);

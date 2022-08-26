@@ -149,6 +149,7 @@ Example returned event DAO object:
   detail: {
     name: string,
     avatarUrl: string,
+    tokenAddress: Array<string>,
     treasuryAddresses: Array<string>,
     id: string 
     /* New items (not from the 'options' list) get 
